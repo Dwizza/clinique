@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="CopilotDiffPersistence">
+    <option name="pendingDiffs">
+      <map>
+        <entry key="$PROJECT_DIR$/src/main/java/com/cliniquedigitale/cliniquedigitale/util/JPAUtil.java">
+          <value>
+            <PendingDiffInfo>
+              <option name="filePath" value="$PROJECT_DIR$/src/main/java/com/cliniquedigitale/cliniquedigitale/util/JPAUtil.java" />
+              <option name="originalContent" value="&#10;" />
+              <option name="updatedContent" value="package com.cliniquedigitale.cliniquedigitale.util;&#10;&#10;// Squelette utilitaire JPA (laisser vide pour l'instant)&#10;public final class JPAUtil {&#10;    private JPAUtil() {}&#10;    // TODO: ajouter EntityManagerFactory et méthodes plus tard&#10;}" />
+            </PendingDiffInfo>
+          </value>
+        </entry>
+      </map>
+    </option>
+  </component>
+</project>
