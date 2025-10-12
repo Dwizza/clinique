@@ -5,7 +5,7 @@ import java.util.UUID;
 
 @Entity
 @Table(name = "admins")
-public class Admin extends User {
+public class Admin {
 
     @Id
     @GeneratedValue

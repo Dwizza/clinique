@@ -6,7 +6,7 @@ import java.util.UUID;
 
 @Entity
 @Table(name = "patients")
-public class Patient extends User{
+public class Patient {
 
     @Id
     @GeneratedValue

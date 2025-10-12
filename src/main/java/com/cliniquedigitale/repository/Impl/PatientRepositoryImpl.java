@@ -1,24 +1,24 @@
 package com.cliniquedigitale.repository.Impl;
 
 import com.cliniquedigitale.config.JpaUtil;
-import com.cliniquedigitale.entities.User;
-import com.cliniquedigitale.repository.UserRepository;
+import com.cliniquedigitale.entities.Patient;
+import com.cliniquedigitale.repository.PatientRepository;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.NoResultException;
 import jakarta.persistence.TypedQuery;
 
 @ApplicationScoped
-public class UserRepositoryImpl implements UserRepository {
+public class PatientRepositoryImpl implements PatientRepository {
 
     @Override
-    public User save(User user){
+    public Patient save(Patient patient) {
         EntityManager em = JpaUtil.getEntityManager();
         try {
             em.getTransaction().begin();
-            em.persist(user);
+            em.persist(patient);
             em.getTransaction().commit();
-            return user;
+            return patient;
         } catch (Exception e) {
             if (em.getTransaction().isActive()) {
                 em.getTransaction().rollback();
@@ -29,16 +29,20 @@ public class UserRepositoryImpl implements UserRepository {
         }
     }
 
-    public User FindByEmail(String email) {
-        EntityManager entityManager = JpaUtil.getEntityManager();
+    @Override
+    public Patient findByCin(String cin) {
+        EntityManager em = JpaUtil.getEntityManager();
         try {
-            TypedQuery<User> query = entityManager.createQuery(
-                    "SELECT u FROM User u WHERE u.email = :email", User.class
+            TypedQuery<Patient> query = em.createQuery(
+                    "SELECT p FROM Patient p WHERE p.cin = :cin", Patient.class
             );
-            query.setParameter("email", email);
+            query.setParameter("cin", cin);
             return query.getSingleResult();
         } catch (NoResultException e) {
             return null;
+        } finally {
+            em.close();
         }
     }
 }
+
