@@ -1,6 +1,6 @@
-    <%@ page contentType="text/html;charset=UTF-8" language="java" %>
-    <%@ taglib uri="jakarta.tags.core" prefix="c" %>
-    <%@ taglib uri="jakarta.tags.fmt" prefix="fmt" %>
+<%@ page contentType="text/html;charset=UTF-8" language="java" %>
+<%@ taglib uri="jakarta.tags.core" prefix="c" %>
+<%@ taglib uri="jakarta.tags.fmt" prefix="fmt" %>
     <!DOCTYPE html>
     <html lang="fr">
     <head>
@@ -164,94 +164,174 @@
                 display: flex;
                 align-items: center;
                 gap: 1rem;
+                position: relative;
+            }
+
+            /* User Menu Button */
+            .user-menu-btn {
+                display: flex;
+                align-items: center;
+                gap: 0.75rem;
+                padding: 0.5rem 1rem;
+                background: white;
+                border: 2px solid #E5E7EB;
+                border-radius: 12px;
+                cursor: pointer;
+                transition: all 0.3s ease;
+                position: relative;
+            }
+
+            .user-menu-btn:hover {
+                border-color: var(--primary);
+                box-shadow: 0 4px 12px rgba(99, 102, 241, 0.2);
+            }
+
+            .user-avatar {
+                width: 40px;
+                height: 40px;
+                background: linear-gradient(135deg, var(--primary), var(--primary-light));
+                border-radius: 50%;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                color: white;
+                font-weight: 700;
+                font-size: 1.1rem;
+                text-transform: uppercase;
             }
 
             .user-info {
-                text-align: right;
+                text-align: left;
             }
 
             .user-name {
                 font-weight: 600;
                 color: var(--text);
+                font-size: 0.95rem;
             }
 
             .user-role {
+                font-size: 0.75rem;
+                color: var(--text-light);
+            }
+
+            .dropdown-icon {
+                width: 20px;
+                height: 20px;
+                color: var(--text-light);
+                transition: transform 0.3s ease;
+            }
+
+            .user-menu-btn.active .dropdown-icon {
+                transform: rotate(180deg);
+            }
+
+            /* Dropdown Menu */
+            .user-dropdown {
+                position: absolute;
+                top: calc(100% + 0.5rem);
+                right: 0;
+                background: white;
+                border-radius: 16px;
+                box-shadow: 0 10px 40px rgba(0, 0, 0, 0.15);
+                min-width: 250px;
+                opacity: 0;
+                visibility: hidden;
+                transform: translateY(-10px);
+                transition: all 0.3s ease;
+                z-index: 1000;
+                overflow: hidden;
+            }
+
+            .user-dropdown.active {
+                opacity: 1;
+                visibility: visible;
+                transform: translateY(0);
+            }
+
+            .dropdown-header {
+                padding: 1.25rem;
+                border-bottom: 2px solid #F3F4F6;
+                background: linear-gradient(135deg, rgba(99, 102, 241, 0.05), rgba(236, 72, 153, 0.05));
+            }
+
+            .dropdown-user-info {
+                display: flex;
+                align-items: center;
+                gap: 0.75rem;
+            }
+
+            .dropdown-avatar {
+                width: 50px;
+                height: 50px;
+                background: linear-gradient(135deg, var(--primary), var(--primary-light));
+                border-radius: 50%;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                color: white;
+                font-weight: 700;
+                font-size: 1.3rem;
+                text-transform: uppercase;
+            }
+
+            .dropdown-user-details .user-name {
+                font-size: 1rem;
+                margin-bottom: 0.25rem;
+            }
+
+            .dropdown-user-details .user-email {
                 font-size: 0.85rem;
                 color: var(--text-light);
             }
 
-            .btn {
-                padding: 0.75rem 1.5rem;
-                border-radius: 12px;
-                font-size: 0.95rem;
-                font-weight: 600;
-                cursor: pointer;
-                transition: all 0.3s ease;
-                border: none;
-                text-decoration: none;
-                display: inline-flex;
+            .dropdown-menu {
+                padding: 0.5rem 0;
+            }
+
+            .dropdown-item {
+                display: flex;
                 align-items: center;
-                gap: 0.5rem;
-                position: relative;
-                overflow: hidden;
-            }
-
-            .btn::before {
-                content: '';
-                position: absolute;
-                top: 50%;
-                left: 50%;
-                width: 0;
-                height: 0;
-                border-radius: 50%;
-                background: rgba(255, 255, 255, 0.3);
-                transform: translate(-50%, -50%);
-                transition: width 0.6s, height 0.6s;
-            }
-
-            .btn:hover::before {
-                width: 300px;
-                height: 300px;
-            }
-
-            .btn-primary {
-                background: linear-gradient(135deg, var(--primary), var(--primary-light));
-                color: white;
-                box-shadow: 0 4px 12px rgba(99, 102, 241, 0.4);
-            }
-
-            .btn-primary:hover {
-                transform: translateY(-2px);
-                box-shadow: 0 6px 20px rgba(99, 102, 241, 0.5);
-            }
-
-            .btn-danger {
-                background: linear-gradient(135deg, var(--error), #F87171);
-                color: white;
-                box-shadow: 0 4px 12px rgba(239, 68, 68, 0.4);
-            }
-
-            .btn-danger:hover {
-                transform: translateY(-2px);
-                box-shadow: 0 6px 20px rgba(239, 68, 68, 0.5);
-            }
-
-            .btn-success {
-                background: linear-gradient(135deg, var(--success), #34D399);
-                color: white;
-                box-shadow: 0 4px 12px rgba(16, 185, 129, 0.4);
-            }
-
-            .btn-outline {
-                background: white;
+                gap: 0.75rem;
+                padding: 0.875rem 1.25rem;
                 color: var(--text);
-                border: 2px solid #E5E7EB;
+                text-decoration: none;
+                transition: all 0.2s ease;
+                cursor: pointer;
+                border: none;
+                background: none;
+                width: 100%;
+                text-align: left;
+                font-size: 0.95rem;
             }
 
-            .btn-outline:hover {
+            .dropdown-item:hover {
                 background: #F9FAFB;
-                border-color: var(--primary);
-                color: var(--primary);
+                padding-left: 1.5rem;
+            }
+
+            .dropdown-item svg {
+                width: 20px;
+                height: 20px;
+                color: var(--text-light);
+            }
+
+            .dropdown-item.danger {
+                color: var(--error);
+            }
+
+            .dropdown-item.danger svg {
+                color: var(--error);
+            }
+
+            .dropdown-item.danger:hover {
+                background: #FEE2E2;
+            }
+
+            .dropdown-divider {
+                height: 2px;
+                background: #F3F4F6;
+                margin: 0.5rem 0;
             }
 
             /* Main Container */
@@ -505,9 +585,88 @@
                 justify-content: flex-end;
             }
 
+            .btn {
+                padding: 0.75rem 1.5rem;
+                border-radius: 12px;
+                font-size: 0.95rem;
+                font-weight: 600;
+                cursor: pointer;
+                transition: all 0.3s ease;
+                border: none;
+                text-decoration: none;
+                display: inline-flex;
+                align-items: center;
+                gap: 0.5rem;
+                position: relative;
+                overflow: hidden;
+            }
+
+            .btn::before {
+                content: '';
+                position: absolute;
+                top: 50%;
+                left: 50%;
+                width: 0;
+                height: 0;
+                border-radius: 50%;
+                background: rgba(255, 255, 255, 0.3);
+                transform: translate(-50%, -50%);
+                transition: width 0.6s, height 0.6s;
+            }
+
+            .btn:hover::before {
+                width: 300px;
+                height: 300px;
+            }
+
+            .btn-primary {
+                background: linear-gradient(135deg, var(--primary), var(--primary-light));
+                color: white;
+                box-shadow: 0 4px 12px rgba(99, 102, 241, 0.4);
+            }
+
+            .btn-primary:hover {
+                transform: translateY(-2px);
+                box-shadow: 0 6px 20px rgba(99, 102, 241, 0.5);
+            }
+
+            .btn-danger {
+                background: linear-gradient(135deg, var(--error), #F87171);
+                color: white;
+                box-shadow: 0 4px 12px rgba(239, 68, 68, 0.4);
+            }
+
+            .btn-danger:hover {
+                transform: translateY(-2px);
+                box-shadow: 0 6px 20px rgba(239, 68, 68, 0.5);
+            }
+
+            .btn-success {
+                background: linear-gradient(135deg, var(--success), #34D399);
+                color: white;
+                box-shadow: 0 4px 12px rgba(16, 185, 129, 0.4);
+            }
+
+            .btn-outline {
+                background: white;
+                color: var(--text);
+                border: 2px solid #E5E7EB;
+            }
+
+            .btn-outline:hover {
+                background: #F9FAFB;
+                border-color: var(--primary);
+                color: var(--primary);
+            }
+
             .btn-small {
                 padding: 0.5rem 1rem;
                 font-size: 0.85rem;
+            }
+
+            .btn-large {
+                padding: 1rem 2rem;
+                font-size: 1.1rem;
             }
 
             /* Empty State */
@@ -687,7 +846,7 @@
     </head>
     <body>
         <!-- Background Shapes -->
-        <div class="bg-shapes">
+            <div class="bg-shapes">
             <div class="shape"></div>
             <div class="shape"></div>
             <div class="shape"></div>
@@ -706,18 +865,73 @@
                     <span class="logo-text">Clinique Digitale</span>
                 </div>
                 <div class="user-section">
-                    <div class="user-info">
-                        <div class="user-name">${sessionScope.user.name} </div>
-                        <div class="user-role">Patient</div>
-                    </div>
-                    <a href="${pageContext.request.contextPath}/logout" class="btn btn-outline">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                            <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path>
-                            <polyline points="16 17 21 12 16 7"></polyline>
-                            <line x1="21" y1="12" x2="9" y2="12"></line>
+                    <div class="user-menu-btn" onclick="toggleUserMenu()">
+                        <div class="user-avatar">
+                            ${sessionScope.user.name.substring(0,1)}
+                        </div>
+                        <div class="user-info">
+                            <div class="user-name">${sessionScope.user.name}</div>
+                            <div class="user-role">Patient</div>
+                        </div>
+                        <svg class="dropdown-icon" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
                         </svg>
-                        Déconnexion
-                    </a>
+                    </div>
+
+                    <!-- Dropdown Menu -->
+                    <div class="user-dropdown" id="userDropdown">
+                        <div class="dropdown-header">
+                            <div class="dropdown-user-info">
+                                <div class="dropdown-avatar">
+                                    ${sessionScope.user.name.substring(0,1)}
+                                </div>
+                                <div class="dropdown-user-details">
+                                    <div class="user-name">${sessionScope.user.name}</div>
+                                    <div class="user-email">${sessionScope.user.email}</div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="dropdown-menu">
+                            <a href="${pageContext.request.contextPath}/patient/profile" class="dropdown-item">
+                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                                </svg>
+                                Mon Profil
+                            </a>
+
+                            <a href="${pageContext.request.contextPath}/patient/appointments" class="dropdown-item">
+                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 0 1-2-2V7a2 2 0 0 1 2-2h4"></path>
+                                </svg>
+                                Mes Rendez-vous
+                            </a>
+
+                            <a href="${pageContext.request.contextPath}/patient/history" class="dropdown-item">
+                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                </svg>
+                                Historique
+                            </a>
+
+                            <a href="${pageContext.request.contextPath}/patient/settings" class="dropdown-item">
+                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                                </svg>
+                                Paramètres
+                            </a>
+
+                            <div class="dropdown-divider"></div>
+
+                            <a href="${pageContext.request.contextPath}/auth/logout" class="dropdown-item danger">
+                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
+                                </svg>
+                                Déconnexion
+                            </a>
+                        </div>
+                    </div>
                 </div>
             </div>
         </header>
@@ -1025,6 +1239,25 @@
                 if (dateInput) {
                     const today = new Date().toISOString().split('T')[0];
                     dateInput.setAttribute('min', today);
+                }
+            });
+
+            // Toggle user menu
+            function toggleUserMenu() {
+                const userDropdown = document.getElementById('userDropdown');
+                const userMenuBtn = document.querySelector('.user-menu-btn');
+                userDropdown.classList.toggle('active');
+                userMenuBtn.classList.toggle('active');
+            }
+
+            // Close user menu when clicking outside
+            document.addEventListener('click', function(event) {
+                const userDropdown = document.getElementById('userDropdown');
+                const userMenuBtn = document.querySelector('.user-menu-btn');
+
+                if (!event.target.closest('.user-section') && userDropdown.classList.contains('active')) {
+                    userDropdown.classList.remove('active');
+                    userMenuBtn.classList.remove('active');
                 }
             });
         </script>

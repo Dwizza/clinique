@@ -1,0 +1,155 @@
+package com.cliniquedigitale.controllers.admin;
+
+import com.cliniquedigitale.DTO.DepartmentDTO;
+import com.cliniquedigitale.DTO.Request.RequestPatientDTO;
+import com.cliniquedigitale.DTO.Request.RequestUserDTO;
+import com.cliniquedigitale.DTO.Response.ResponseUserDTO;
+import com.cliniquedigitale.Enums.Role;
+import com.cliniquedigitale.entities.Patient;
+import com.cliniquedigitale.entities.Specialty;
+import com.cliniquedigitale.service.AuthService;
+import com.cliniquedigitale.service.DepartmentService;
+import com.cliniquedigitale.service.PatientService;
+import com.cliniquedigitale.service.SpecialtyService;
+import jakarta.inject.Inject;
+import jakarta.servlet.ServletException;
+import jakarta.servlet.annotation.WebServlet;
+import jakarta.servlet.http.HttpServlet;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
+
+import java.io.IOException;
+import java.time.LocalDate;
+import java.util.List;
+
+@WebServlet("/admin/*")
+public class AdminServlet extends HttpServlet {
+
+    @Inject
+    private DepartmentService departmentService;
+
+    @Inject
+    private PatientService patientService;
+
+    @Inject
+    private SpecialtyService specialtyService;
+
+    @Inject
+    private AuthService authService;
+
+    @Override
+    protected void doGet(HttpServletRequest request, HttpServletResponse response)
+            throws ServletException, IOException {
+        ResponseUserDTO user = (ResponseUserDTO) request.getSession().getAttribute("user");
+        System.out.println("user: "+ user);
+        if (user == null) {
+            response.sendRedirect(request.getContextPath() + "/auth/login");
+            return;
+        }
+        List<DepartmentDTO> departments = departmentService.getAll();
+        request.setAttribute("departments", departments);
+
+        List<Patient> patients = patientService.getAll();
+        request.setAttribute("patients", patients);
+
+        List<Specialty> specialities = specialtyService.getAll();
+        request.setAttribute("specialities", specialities);
+
+        request.getRequestDispatcher("/WEB-INF/view/admin/dashboard.jsp").forward(request, response);
+    }
+
+    @Override
+    protected void doPost(HttpServletRequest request, HttpServletResponse response)
+            throws IOException {
+        String path = request.getPathInfo();
+        if (path == null || path.isEmpty() || "/".equals(path)) {
+            response.sendError(HttpServletResponse.SC_BAD_REQUEST);
+            return;
+        }
+
+        if ("/users/create".equals(path)) {
+            handleCreatePatient(request, response);
+        } else {
+            response.sendError(HttpServletResponse.SC_NOT_FOUND);
+        }
+    }
+
+    private void handleCreatePatient(HttpServletRequest request, HttpServletResponse response) throws IOException {
+        // Sécurité basique: vérifier qu'un utilisateur est connecté
+        ResponseUserDTO sessionUser = (ResponseUserDTO) request.getSession().getAttribute("user");
+        if (sessionUser == null || sessionUser.getRole() == null) {
+            response.sendRedirect(request.getContextPath() + "/auth/login");
+            return;
+        }
+
+        String role = request.getParameter("role");
+        if (!"PATIENT".equalsIgnoreCase(role)) {
+            // Pour cette demande, on ne gère que la création d'un patient
+            response.sendRedirect(request.getContextPath() + "/admin?error=unsupportedRole");
+            return;
+        }
+
+        String name = request.getParameter("name");
+        String email = request.getParameter("email");
+        String password = request.getParameter("password");
+        String confirmPassword = request.getParameter("confirmPassword");
+
+        String cin = request.getParameter("cin");
+        String naissanceStr = request.getParameter("naissance");
+        String sexe = request.getParameter("sexe");
+        String adresse = request.getParameter("adresse");
+        String telephone = request.getParameter("telephone");
+        String sang = request.getParameter("sang");
+
+        if (isInvalid(name, email, password, confirmPassword, cin, naissanceStr, sexe, telephone)) {
+            response.sendRedirect(request.getContextPath() + "/admin?error=validation");
+            return;
+        }
+
+        LocalDate naissance;
+        try {
+            naissance = LocalDate.parse(naissanceStr);
+        } catch (Exception e) {
+            response.sendRedirect(request.getContextPath() + "/admin?error=invaliddate");
+            return;
+        }
+
+        RequestUserDTO userDTO = new RequestUserDTO();
+        userDTO.setName(name);
+        userDTO.setEmail(email);
+        userDTO.setPassword(password);
+        userDTO.setRole(Role.PATIENT);
+
+        RequestPatientDTO patientDTO = new RequestPatientDTO();
+        patientDTO.setCin(cin);
+        patientDTO.setNaissance(naissance);
+        patientDTO.setSexe(sexe);
+        patientDTO.setAdresse(adresse);
+        patientDTO.setTelephone(telephone);
+        patientDTO.setSang(sang);
+
+        try {
+            authService.registerPatient(userDTO, patientDTO);
+            response.sendRedirect(request.getContextPath() + "/admin?created=patient");
+        } catch (IllegalArgumentException ex) {
+            response.sendRedirect(request.getContextPath() + "/admin?error=" + encodeForQuery(ex.getMessage()));
+        }
+    }
+
+    private boolean isInvalid(String name, String email, String password, String confirmPassword,
+                              String cin, String naissance, String sexe, String telephone) {
+        return name == null || name.trim().isEmpty()
+                || email == null || email.trim().isEmpty()
+                || password == null || password.length() < 6
+                || !password.equals(confirmPassword)
+                || cin == null || cin.trim().isEmpty()
+                || naissance == null || naissance.trim().isEmpty()
+                || sexe == null || sexe.trim().isEmpty()
+                || telephone == null || telephone.trim().isEmpty();
+    }
+
+    private String encodeForQuery(String s) {
+        if (s == null) return "";
+        return s.replace(" ", "+");
+    }
+}

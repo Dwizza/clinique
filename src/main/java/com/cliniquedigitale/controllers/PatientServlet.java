@@ -1,6 +1,6 @@
 package com.cliniquedigitale.controllers;
 
-import com.cliniquedigitale.DTO.UserDTO;
+import com.cliniquedigitale.DTO.Request.RequestUserDTO;
 import com.cliniquedigitale.service.PatientService;
 import jakarta.inject.Inject;
 import jakarta.servlet.ServletException;
@@ -21,7 +21,7 @@ public class PatientServlet extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        UserDTO user = (UserDTO) request.getSession().getAttribute("user");
+        RequestUserDTO user = (RequestUserDTO) request.getSession().getAttribute("user");
 
         if (user == null) {
             response.sendRedirect(request.getContextPath() + "/auth/login");

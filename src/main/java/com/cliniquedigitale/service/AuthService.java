@@ -1,17 +1,17 @@
 package com.cliniquedigitale.service;
 
-import com.cliniquedigitale.DTO.UserDTO;
+import com.cliniquedigitale.DTO.Request.RequestPatientDTO;
+import com.cliniquedigitale.DTO.Request.RequestUserDTO;
+import com.cliniquedigitale.DTO.Response.ResponseUserDTO;
 import com.cliniquedigitale.Enums.Role;
 import com.cliniquedigitale.entities.Patient;
 import com.cliniquedigitale.entities.User;
+import com.cliniquedigitale.mapper.PatientMapper;
 import com.cliniquedigitale.mapper.UserMapper;
 import com.cliniquedigitale.repository.PatientRepository;
 import com.cliniquedigitale.repository.UserRepository;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
-
-import java.time.LocalDate;
-import java.util.UUID;
 
 @ApplicationScoped
 public class AuthService {
@@ -20,52 +20,55 @@ public class AuthService {
     private UserRepository userRepository;
 
     @Inject
+    private UserMapper userMapper;
+
+    @Inject
+    private PatientMapper patientMapper;
+
+    @Inject
     private PatientRepository patientRepository;
 
-    public UserDTO Login(String email, String password){
-        User user = userRepository.FindByEmail(email);
-        UserDTO dto = UserMapper.toDTO(user);
+    public ResponseUserDTO Login(RequestUserDTO request){
+        User user = userRepository.FindByEmail(request.getEmail());
+        ResponseUserDTO dto = UserMapper.toResponse(user);
 
-        if (user != null && user.getPassword().equals(password)) {
+        if (user != null && user.getPassword().equals(request.getPassword())) {
             return dto;
         }
         return null;
     }
 
-    public UserDTO registerPatient(String name, String email, String password,
-                                   String cin, LocalDate naissance, String sexe,
-                                   String adresse, String telephone, String sang) {
+    public ResponseUserDTO registerPatient(RequestUserDTO requestUserDto, RequestPatientDTO requestPatientDto) {
 
-        User existingUser = userRepository.FindByEmail(email);
+        User existingUser = userRepository.FindByEmail(requestUserDto.getEmail());
         if (existingUser != null) {
-            return null;
+            throw new IllegalArgumentException("Email déjà utilisé !");
         }
 
-        Patient existingPatient = patientRepository.findByCin(cin);
+        Patient existingPatient = patientRepository.findByCin(requestPatientDto.getCin());
         if (existingPatient != null) {
-            return null;
+            throw new IllegalArgumentException("CIN déjà utilisé !");
         }
 
-        User user = new User();
-        user.setName(name);
-        user.setEmail(email);
-        user.setPassword(password);
+        User user = userMapper.toEntity(requestUserDto);
+
         user.setRole(Role.PATIENT);
         user.setActif(true);
 
         User persistedUser = userRepository.save(user);
 
         Patient patient = new Patient();
-        patient.setCin(cin);
-        patient.setNaissance(naissance);
-        patient.setSexe(sexe);
-        patient.setAdresse(adresse);
-        patient.setTelephone(telephone);
-        patient.setSang(sang);
+        patient.setCin(requestPatientDto.getCin());
+        patient.setNaissance(requestPatientDto.getNaissance());
+        patient.setSexe(requestPatientDto.getSexe());
+        patient.setAdresse(requestPatientDto.getAdresse());
+        patient.setTelephone(requestPatientDto.getTelephone());
+        patient.setSang(requestPatientDto.getSang());
         patient.setUser(persistedUser);
 
         patientRepository.save(patient);
 
-        return UserMapper.toDTO(persistedUser);
+        return UserMapper.toResponse(persistedUser);
     }
+
 }

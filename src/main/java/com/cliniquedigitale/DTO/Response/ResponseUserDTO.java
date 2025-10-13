@@ -1,32 +1,12 @@
-package com.cliniquedigitale.DTO;
+package com.cliniquedigitale.DTO.Response;
 
 import com.cliniquedigitale.Enums.Role;
 
-import java.util.UUID;
-
-public class UserDTO {
-    protected UUID id;
+public class ResponseUserDTO {
     private String name;
     private String email;
-    private String password;
     private Role role;
     private boolean actif = true;
-
-    public UserDTO(UUID id, String name, String email, String password, Role role) {
-        this.id = id;
-        this.name = name;
-        this.email = email;
-        this.password = password;
-        this.role = role;
-    }
-
-    public UUID getId() {
-        return id;
-    }
-
-    public void setId(UUID id) {
-        this.id = id;
-    }
 
     public String getName() {
         return name;
@@ -42,14 +22,6 @@ public class UserDTO {
 
     public void setEmail(String email) {
         this.email = email;
-    }
-
-    public String getPassword() {
-        return password;
-    }
-
-    public void setPassword(String password) {
-        this.password = password;
     }
 
     public Role getRole() {

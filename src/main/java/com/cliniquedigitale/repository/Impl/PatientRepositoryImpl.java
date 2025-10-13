@@ -8,6 +8,8 @@ import jakarta.persistence.EntityManager;
 import jakarta.persistence.NoResultException;
 import jakarta.persistence.TypedQuery;
 
+import java.util.List;
+
 @ApplicationScoped
 public class PatientRepositoryImpl implements PatientRepository {
 
@@ -44,5 +46,17 @@ public class PatientRepositoryImpl implements PatientRepository {
             em.close();
         }
     }
-}
 
+    @Override
+    public List<Patient> findAll() {
+        EntityManager em = JpaUtil.getEntityManager();
+        try {
+            TypedQuery<Patient> query = em.createQuery(
+                    "SELECT p FROM Patient p ORDER BY p.user.name", Patient.class
+            );
+            return query.getResultList();
+        } finally {
+            em.close();
+        }
+    }
+}

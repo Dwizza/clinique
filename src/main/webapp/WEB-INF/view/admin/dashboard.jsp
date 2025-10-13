@@ -973,6 +973,18 @@
                 <h3>Gérer Départements</h3>
                 <p>Créer et gérer les départements</p>
             </div>
+
+            <!-- New: Manage Specialties -->
+            <div class="action-card" onclick="openSpecialtyModal()">
+                <div class="action-icon">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="30" height="30" fill="none" viewBox="0 0 24 24" stroke="white" stroke-width="2">
+                        <path d="M12 22s8-4 8-10a8 8 0 1 0-16 0c0 6 8 10 8 10z" />
+                        <path d="M12 8v4l2 2" />
+                    </svg>
+                </div>
+                <h3>Gérer Spécialités</h3>
+                <p>Créer et lister les spécialités par département</p>
+            </div>
         </div>
 
         <!-- Management Section -->
@@ -1266,7 +1278,7 @@
     <div id="departmentModal" class="modal">
         <div class="modal-content">
             <div class="modal-header">
-                <h3 class="modal-title">Gérer les Départements</h3>
+                <h3 class="modal-title" id="departmentModalTitle">Gérer les Départements</h3>
                 <button class="modal-close" onclick="closeDepartmentModal()">
                     <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                         <line x1="18" y1="6" x2="6" y2="18"></line>
@@ -1275,7 +1287,8 @@
                 </button>
             </div>
 
-            <form action="${pageContext.request.contextPath}/admin/departments/create" method="post">
+            <form id="departmentForm" action="${pageContext.request.contextPath}/admin/department/create" method="post">
+                <input type="hidden" id="deptId" name="id" />
                 <div class="form-group">
                     <label class="form-label" for="deptName">Nom du Département</label>
                     <input type="text" class="form-input" id="deptName" name="name" required>
@@ -1286,7 +1299,7 @@
                     <textarea class="form-textarea" id="deptDescription" name="description" rows="3"></textarea>
                 </div>
 
-                <button type="submit" class="btn btn-success" style="width: 100%;">
+                <button id="departmentSubmitBtn" type="submit" class="btn btn-success" style="width: 100%;">
                     <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                         <line x1="12" y1="5" x2="12" y2="19"></line>
                         <line x1="5" y1="12" x2="19" y2="12"></line>
@@ -1313,8 +1326,26 @@
                                 <td>${dept.name}</td>
                                 <td>${dept.description}</td>
                                 <td>
-                                    <button class="btn btn-primary btn-small" onclick="editDepartment('${dept.id}')">
-                                        Modifier
+                                    <button type="button" class="btn btn-primary btn-small"
+                                            onclick="editDepartment(this, '${dept.id}')"
+                                            data-name="${dept.name}"
+                                            data-description="${dept.description}"
+                                            title="Modifier" aria-label="Modifier">
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                            <path d="M12 20h9" />
+                                            <path d="M16.5 3.5a2.121 2.121 0 1 1 3 3L7 19l-4 1 1-4 12.5-12.5z" />
+                                        </svg>
+                                    </button>
+                                    <button type="button" class="btn btn-danger btn-small" style="margin-left: .5rem;"
+                                            onclick="confirmDeleteDepartment('${dept.id}')"
+                                            title="Supprimer" aria-label="Supprimer">
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                            <polyline points="3 6 5 6 21 6" />
+                                            <path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6" />
+                                            <path d="M10 11v6" />
+                                            <path d="M14 11v6" />
+                                            <path d="M9 6V4a2 2 0 0 1 2-2h2a2 2 0 0 1 2 2v2" />
+                                        </svg>
                                     </button>
                                 </td>
                             </tr>
@@ -1325,9 +1356,82 @@
         </div>
     </div>
 
+    <!-- Hidden delete form for departments -->
+    <form id="deleteDepartmentForm" action="${pageContext.request.contextPath}/admin/department/delete" method="post" style="display:none;">
+        <input type="hidden" name="id" id="deleteDeptId" />
+    </form>
+
+    <!-- Specialty Modal -->
+    <div id="specialtyModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title">Gérer les Spécialités</h3>
+                <button class="modal-close" onclick="closeSpecialtyModal()">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <line x1="18" y1="6" x2="6" y2="18"></line>
+                        <line x1="6" y1="6" x2="18" y2="18"></line>
+                    </svg>
+                </button>
+            </div>
+
+            <form id="specialtyForm" action="${pageContext.request.contextPath}/admin/specialty/create" method="post">
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label class="form-label" for="specName">Nom de la Spécialité</label>
+                        <input type="text" class="form-input" id="specName" name="name" required>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label" for="specDepartment">Département</label>
+                        <select class="form-select" id="specDepartment" name="departmentId" required>
+                            <option value="">Choisir un département</option>
+                            <c:forEach var="dept" items="${departments}">
+                                <option value="${dept.id}">${dept.name}</option>
+                            </c:forEach>
+                        </select>
+                    </div>
+                    <div class="form-group full-width">
+                        <label class="form-label" for="specDesc">Description</label>
+                        <textarea class="form-textarea" id="specDesc" name="description" rows="3"></textarea>
+                    </div>
+                </div>
+                <button type="submit" class="btn btn-success" style="width:100%;">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <line x1="12" y1="5" x2="12" y2="19"></line>
+                        <line x1="5" y1="12" x2="19" y2="12"></line>
+                    </svg>
+                    Créer la Spécialité
+                </button>
+            </form>
+
+            <hr style="margin: 2rem 0; border: none; border-top: 2px solid #E5E7EB;">
+
+            <h4 style="margin-bottom: 1rem; color: var(--text);">Spécialités Existantes</h4>
+            <div class="table-container">
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>Nom</th>
+                            <th>Département</th>
+                            <th>Description</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <c:forEach var="sp" items="${specialities}">
+                            <tr>
+                                <td>${sp.name}</td>
+                                <td>${sp.department.name}</td>
+                                <td>${sp.description}</td>
+                            </tr>
+                        </c:forEach>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
     <script>
-        // Tab switching
-        function switchTab(tabName) {
+         // Tab switching
+         function switchTab(tabName) {
             // Hide all tabs
             document.querySelectorAll('.tab-content').forEach(tab => {
                 tab.classList.remove('active');
@@ -1381,11 +1485,37 @@
 
         // Department Modal
         function openDepartmentModal() {
+            // Mode création
+            const form = document.getElementById('departmentForm');
+            form.action = '${pageContext.request.contextPath}/admin/department/create';
+            document.getElementById('deptId').value = '';
+            document.getElementById('deptName').value = '';
+            document.getElementById('deptDescription').value = '';
+            document.getElementById('departmentModalTitle').textContent = 'Créer un Département';
+            const btn = document.getElementById('departmentSubmitBtn');
+            btn.classList.remove('btn-primary');
+            btn.classList.add('btn-success');
+            btn.innerHTML = `
+                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <line x1="12" y1="5" x2="12" y2="19"></line>
+                    <line x1="5" y1="12" x2="19" y2="12"></line>
+                </svg>
+                Créer le Département`;
             document.getElementById('departmentModal').classList.add('active');
         }
 
         function closeDepartmentModal() {
-            document.getElementById('departmentModal').classList.remove('active');
+             document.getElementById('departmentModal').classList.remove('active');
+         }
+
+         // Specialty Modal
+         function openSpecialtyModal(){
+            document.getElementById('specialtyForm').reset();
+            document.getElementById('specialtyModal').classList.add('active');
+        }
+
+        function closeSpecialtyModal(){
+            document.getElementById('specialtyModal').classList.remove('active');
         }
 
         // Edit functions (to be implemented)
@@ -1394,9 +1524,31 @@
             console.log('Edit user:', userId);
         }
 
-        function editDepartment(deptId) {
-            // TODO: Load department data and enable editing
-            console.log('Edit department:', deptId);
+        function editDepartment(btn, deptId) {
+             // Passer le modal en mode édition en lisant les data-attributes du bouton
+              const form = document.getElementById('departmentForm');
+              form.action = '${pageContext.request.contextPath}/admin/department/edit';
+              document.getElementById('deptId').value = deptId;
+              document.getElementById('deptName').value = btn.dataset.name || '';
+              document.getElementById('deptDescription').value = btn.dataset.description || '';
+              document.getElementById('departmentModalTitle').textContent = 'Modifier le Département';
+             const submitBtn = document.getElementById('departmentSubmitBtn');
+             submitBtn.classList.remove('btn-success');
+             submitBtn.classList.add('btn-primary');
+             submitBtn.innerHTML = `
+                 <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                     <path d="M12 20h9" />
+                     <path d="M16.5 3.5a2.121 2.121 0 1 1 3 3L7 19l-4 1 1-4 12.5-12.5z" />
+                 </svg>
+                 Mettre à jour`;
+              document.getElementById('departmentModal').classList.add('active');
+          }
+
+        function confirmDeleteDepartment(deptId) {
+            if (confirm('Voulez-vous vraiment supprimer ce département ?')) {
+                document.getElementById('deleteDeptId').value = deptId;
+                document.getElementById('deleteDepartmentForm').submit();
+            }
         }
 
         // Close modals when clicking outside
