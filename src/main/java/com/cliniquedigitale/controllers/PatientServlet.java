@@ -21,12 +21,6 @@ public class PatientServlet extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        RequestUserDTO user = (RequestUserDTO) request.getSession().getAttribute("user");
-
-        if (user == null) {
-            response.sendRedirect(request.getContextPath() + "/auth/login");
-            return;
-        }
         request.getRequestDispatcher("/WEB-INF/view/patient/dashboard.jsp").forward(request, response);
     }
 
@@ -36,6 +30,4 @@ public class PatientServlet extends HttpServlet {
 
 
     }
-
-    
 }

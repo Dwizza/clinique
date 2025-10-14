@@ -58,5 +58,20 @@ public class SpecialtyRepositoryImpl implements SpecialtyRepository {
             em.close();
         }
     }
+
+    @Override
+    public Specialty findById(UUID specialtyId) {
+        EntityManager em = JpaUtil.getEntityManager();
+
+        try {
+            TypedQuery<Specialty> q = em.createQuery("SELECT s FROM Specialty s WHERE s.id = :id", Specialty.class);
+            q.setParameter("id", specialtyId);
+            return q.getSingleResult();
+        } catch (NoResultException e) {
+            return null;
+        } finally {
+            em.close();
+        }
+    }
 }
 

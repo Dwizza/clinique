@@ -52,9 +52,6 @@ public class AuthService {
 
         User user = userMapper.toEntity(requestUserDto);
 
-        user.setRole(Role.PATIENT);
-        user.setActif(true);
-
         User persistedUser = userRepository.save(user);
 
         Patient patient = new Patient();

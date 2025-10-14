@@ -11,7 +11,6 @@ public class Staff  {
     @GeneratedValue
     private UUID id;
 
-
     @OneToOne
     @JoinColumn(name = "user_id", unique = true)
     private User user;

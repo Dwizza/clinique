@@ -9,5 +9,6 @@ public interface SpecialtyRepository {
     Specialty save(Specialty specialty);
     List<Specialty> findAll();
     Specialty findByNameAndDepartment(String name, UUID departmentId);
+    Specialty findById(UUID specialtyId);
 }
 

@@ -141,6 +141,14 @@ public class AuthServlet extends HttpServlet {
 
         if (user != null) {
             session.setAttribute("user", user);
+            if (!user.isActif()) {
+                try{
+                    request.getRequestDispatcher("/WEB-INF/view/inactifAccount.jsp").forward(request,response);
+                } catch (ServletException e) {
+                    throw new RuntimeException(e);
+                }
+                return;
+            }
 
             switch (user.getRole()) {
                 case ADMIN -> response.sendRedirect(request.getContextPath() + "/admin");

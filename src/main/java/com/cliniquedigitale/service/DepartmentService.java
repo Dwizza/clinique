@@ -41,13 +41,13 @@ public class DepartmentService {
         return departmentMapper.toDTOList(entities);
     }
 
-    // new: fetch by id
+
     public DepartmentDTO getById(UUID id){
         Department entity = departmentRepository.findById(id);
         return departmentMapper.toDTO(entity);
     }
 
-    // new: update department (name + description)
+
     public DepartmentDTO update(DepartmentDTO depDTO){
         if (depDTO.getId() == null) {
             throw new IllegalArgumentException("Id manquant");
@@ -56,7 +56,7 @@ public class DepartmentService {
         if (current == null) {
             throw new IllegalArgumentException("Department introuvable");
         }
-        // Unicité du nom si changé
+
         if (depDTO.getName() != null && !depDTO.getName().equalsIgnoreCase(current.getName())){
             Department exists = departmentRepository.findDepartment(depDTO.getName());
             if (exists != null) {
@@ -69,7 +69,6 @@ public class DepartmentService {
         return departmentMapper.toDTO(updated);
     }
 
-    // new: delete department by id
     public boolean delete(UUID id){
         if (id == null) {
             throw new IllegalArgumentException("Id manquant");

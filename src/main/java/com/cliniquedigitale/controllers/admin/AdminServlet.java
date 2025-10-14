@@ -1,16 +1,14 @@
 package com.cliniquedigitale.controllers.admin;
 
 import com.cliniquedigitale.DTO.DepartmentDTO;
+import com.cliniquedigitale.DTO.DoctorDTO;
 import com.cliniquedigitale.DTO.Request.RequestPatientDTO;
 import com.cliniquedigitale.DTO.Request.RequestUserDTO;
 import com.cliniquedigitale.DTO.Response.ResponseUserDTO;
 import com.cliniquedigitale.Enums.Role;
 import com.cliniquedigitale.entities.Patient;
 import com.cliniquedigitale.entities.Specialty;
-import com.cliniquedigitale.service.AuthService;
-import com.cliniquedigitale.service.DepartmentService;
-import com.cliniquedigitale.service.PatientService;
-import com.cliniquedigitale.service.SpecialtyService;
+import com.cliniquedigitale.service.*;
 import jakarta.inject.Inject;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
@@ -21,6 +19,7 @@ import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.time.LocalDate;
 import java.util.List;
+import java.util.UUID;
 
 @WebServlet("/admin/*")
 public class AdminServlet extends HttpServlet {
@@ -36,6 +35,12 @@ public class AdminServlet extends HttpServlet {
 
     @Inject
     private AuthService authService;
+
+    @Inject
+    private StaffService staffService;
+
+    @Inject
+    private DoctorSevice doctorSevice;
 
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
@@ -68,14 +73,13 @@ public class AdminServlet extends HttpServlet {
         }
 
         if ("/users/create".equals(path)) {
-            handleCreatePatient(request, response);
+            handleCreateUsers(request, response);
         } else {
             response.sendError(HttpServletResponse.SC_NOT_FOUND);
         }
     }
 
-    private void handleCreatePatient(HttpServletRequest request, HttpServletResponse response) throws IOException {
-        // Sécurité basique: vérifier qu'un utilisateur est connecté
+    private void handleCreateUsers(HttpServletRequest request, HttpServletResponse response) throws IOException {
         ResponseUserDTO sessionUser = (ResponseUserDTO) request.getSession().getAttribute("user");
         if (sessionUser == null || sessionUser.getRole() == null) {
             response.sendRedirect(request.getContextPath() + "/auth/login");
@@ -83,57 +87,114 @@ public class AdminServlet extends HttpServlet {
         }
 
         String role = request.getParameter("role");
-        if (!"PATIENT".equalsIgnoreCase(role)) {
-            // Pour cette demande, on ne gère que la création d'un patient
+        if ("PATIENT".equals(role)) {
+            String name = request.getParameter("name");
+            String email = request.getParameter("email");
+            String password = request.getParameter("password");
+            String confirmPassword = request.getParameter("confirmPassword");
+
+            String cin = request.getParameter("cin");
+            String naissanceStr = request.getParameter("naissance");
+            String sexe = request.getParameter("sexe");
+            String adresse = request.getParameter("adresse");
+            String telephone = request.getParameter("telephone");
+            String sang = request.getParameter("sang");
+
+            if (isInvalid(name, email, password, confirmPassword, cin, naissanceStr, sexe, telephone)) {
+                response.sendRedirect(request.getContextPath() + "/admin?error=validation");
+                return;
+            }
+
+            LocalDate naissance;
+            try {
+                naissance = LocalDate.parse(naissanceStr);
+            } catch (Exception e) {
+                response.sendRedirect(request.getContextPath() + "/admin?error=invaliddate");
+                return;
+            }
+
+            RequestUserDTO userDTO = new RequestUserDTO();
+            userDTO.setName(name);
+            userDTO.setEmail(email);
+            userDTO.setPassword(password);
+            userDTO.setRole(Role.PATIENT);
+            userDTO.setActif(true);
+
+            RequestPatientDTO patientDTO = new RequestPatientDTO();
+            patientDTO.setCin(cin);
+            patientDTO.setNaissance(naissance);
+            patientDTO.setSexe(sexe);
+            patientDTO.setAdresse(adresse);
+            patientDTO.setTelephone(telephone);
+            patientDTO.setSang(sang);
+
+            try {
+                authService.registerPatient(userDTO, patientDTO);
+                response.sendRedirect(request.getContextPath() + "/admin?created=patient");
+            } catch (IllegalArgumentException ex) {
+                response.sendRedirect(request.getContextPath() + "/admin?error=" + encodeForQuery(ex.getMessage()));
+            }
+
+        } else if ("STAFF".equals(role)) {
+            String name = request.getParameter("name");
+            String email = request.getParameter("email");
+            String password = request.getParameter("password");
+            String confirm = request.getParameter("confirmPassword");
+
+            RequestUserDTO userDTO = new RequestUserDTO();
+            userDTO.setName(name);
+            userDTO.setEmail(email);
+            userDTO.setPassword(password);
+            userDTO.setRole(Role.STAFF);
+            userDTO.setActif(true);
+
+            try {
+                staffService.registerStaff(userDTO);
+                response.sendRedirect(request.getContextPath() + "/admin?created=staff");
+            } catch (IllegalArgumentException ex) {
+                response.sendRedirect(request.getContextPath() + "/admin?error=" + encodeForQuery(ex.getMessage()));
+            }
+
+
+
+        } else if ("DOCTOR".equals(role)) {
+            String name = request.getParameter("name");
+            String email = request.getParameter("email");
+            String password = request.getParameter("password");
+            String confirm = request.getParameter("confirmPassword");
+
+            if (!password.equals(confirm)){
+
+            }
+
+            String matricule = request.getParameter("matricule");
+            String titre = request.getParameter("titre");
+            UUID specialityId = UUID.fromString(request.getParameter("specialityId"));
+
+            RequestUserDTO userDTO = new RequestUserDTO();
+            userDTO.setName(name);
+            userDTO.setEmail(email);
+            userDTO.setPassword(password);
+            userDTO.setRole(Role.DOCTOR);
+            userDTO.setActif(true);
+
+            DoctorDTO doctorDTO = new DoctorDTO();
+            doctorDTO.setMatricule(matricule);
+            doctorDTO.setTitre(titre);
+            doctorDTO.setSpecialtyId(specialityId);
+
+            try {
+                doctorSevice.registerDoctor(userDTO, doctorDTO);
+                response.sendRedirect(request.getContextPath() + "/admin?created=doctor");
+            } catch (IllegalArgumentException ex) {
+                response.sendRedirect(request.getContextPath() + "/admin?error=" + encodeForQuery(ex.getMessage()));
+            }
+        }else {
             response.sendRedirect(request.getContextPath() + "/admin?error=unsupportedRole");
             return;
         }
 
-        String name = request.getParameter("name");
-        String email = request.getParameter("email");
-        String password = request.getParameter("password");
-        String confirmPassword = request.getParameter("confirmPassword");
 
-        String cin = request.getParameter("cin");
-        String naissanceStr = request.getParameter("naissance");
-        String sexe = request.getParameter("sexe");
-        String adresse = request.getParameter("adresse");
-        String telephone = request.getParameter("telephone");
-        String sang = request.getParameter("sang");
-
-        if (isInvalid(name, email, password, confirmPassword, cin, naissanceStr, sexe, telephone)) {
-            response.sendRedirect(request.getContextPath() + "/admin?error=validation");
-            return;
-        }
-
-        LocalDate naissance;
-        try {
-            naissance = LocalDate.parse(naissanceStr);
-        } catch (Exception e) {
-            response.sendRedirect(request.getContextPath() + "/admin?error=invaliddate");
-            return;
-        }
-
-        RequestUserDTO userDTO = new RequestUserDTO();
-        userDTO.setName(name);
-        userDTO.setEmail(email);
-        userDTO.setPassword(password);
-        userDTO.setRole(Role.PATIENT);
-
-        RequestPatientDTO patientDTO = new RequestPatientDTO();
-        patientDTO.setCin(cin);
-        patientDTO.setNaissance(naissance);
-        patientDTO.setSexe(sexe);
-        patientDTO.setAdresse(adresse);
-        patientDTO.setTelephone(telephone);
-        patientDTO.setSang(sang);
-
-        try {
-            authService.registerPatient(userDTO, patientDTO);
-            response.sendRedirect(request.getContextPath() + "/admin?created=patient");
-        } catch (IllegalArgumentException ex) {
-            response.sendRedirect(request.getContextPath() + "/admin?error=" + encodeForQuery(ex.getMessage()));
-        }
     }
 
     private boolean isInvalid(String name, String email, String password, String confirmPassword,

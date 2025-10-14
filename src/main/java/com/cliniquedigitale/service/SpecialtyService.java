@@ -29,7 +29,6 @@ public class SpecialtyService {
         if (dep == null) {
             throw new IllegalArgumentException("Département introuvable");
         }
-        // unicité par département
         if (dto.getName() == null || dto.getName().isBlank()) {
             throw new IllegalArgumentException("Nom requis");
         }

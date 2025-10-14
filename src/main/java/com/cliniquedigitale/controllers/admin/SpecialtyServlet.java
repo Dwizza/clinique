@@ -35,10 +35,10 @@ public class SpecialtyServlet extends HttpServlet {
                 dto.setDepartmentId(UUID.fromString(departmentId));
                 specialtyService.create(dto);
                 response.sendRedirect(request.getContextPath() + "/admin");
-//                return;
+
             } catch (IllegalArgumentException e) {
                 response.sendError(HttpServletResponse.SC_BAD_REQUEST, e.getMessage());
-                return;
+
             }
         } else {
             response.sendError(HttpServletResponse.SC_NOT_FOUND);
