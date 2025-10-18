@@ -1,4 +1,5 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <!DOCTYPE html>
 <html lang="fr">
 <head>
@@ -388,7 +389,7 @@
             <li><a href="#availability">Disponibilité</a></li>
         </ul>
         <div class="nav-actions">
-            <div class="avatar">DR</div>
+            <div class="avatar">${avatarInitials}</div>
         </div>
     </nav>
 </header>
@@ -396,12 +397,12 @@
 <main class="main-container">
     <section class="welcome-section">
         <div class="welcome-content">
-            <h1>Bonjour Dr. Rahmani 👋</h1>
+            <h1>Bonjour ${doctorName} 👋</h1>
             <p>Voici un aperçu de votre activité pour aujourd'hui. Gérez votre disponibilité et consultez vos rendez-vous programmés.</p>
         </div>
         <div class="welcome-actions">
             <a href="${pageContext.request.contextPath}/doctor/availability" class="btn btn-primary">⏰ Gérer mes disponibilités</a>
-            <a href="#appointments" class="btn btn-outline">📅 Mes rendez-vous</a>
+            <a href="${pageContext.request.contextPath}/doctor/appointments" class="btn btn-outline">📅 Mes rendez-vous</a>
         </div>
     </section>
 
@@ -409,95 +410,82 @@
         <article class="stat-card">
             <div class="stat-header">
                 <div>
-                    <div class="stat-value">12</div>
+                    <div class="stat-value">${appointmentsCount}</div>
                     <div class="stat-label">Consultations du jour</div>
                 </div>
                 <div class="stat-icon primary">🩺</div>
             </div>
-            <div class="stat-trend positive">+3 vs. hier</div>
+            <div class="stat-trend positive">Aujourd'hui</div>
         </article>
         <article class="stat-card">
             <div class="stat-header">
                 <div>
-                    <div class="stat-value">8h</div>
+                    <div class="stat-value">${availableHoursLabel}</div>
                     <div class="stat-label">Heures disponibles aujourd'hui</div>
                 </div>
                 <div class="stat-icon success">⏰</div>
             </div>
-            <div class="stat-trend positive">Planning optimal</div>
+            <div class="stat-trend positive">Planning à jour</div>
         </article>
         <article class="stat-card">
             <div class="stat-header">
                 <div>
-                    <div class="stat-value">3</div>
+                    <div class="stat-value">${notesCount}</div>
                     <div class="stat-label">Notes à compléter</div>
                 </div>
                 <div class="stat-icon info">📝</div>
             </div>
-            <div class="stat-trend warning">À faire aujourd'hui</div>
+            <div class="stat-trend warning">À faire</div>
         </article>
         <article class="stat-card">
             <div class="stat-header">
                 <div>
-                    <div class="stat-value">45</div>
+                    <div class="stat-value">${monthConsultations}</div>
                     <div class="stat-label">Consultations ce mois</div>
                 </div>
                 <div class="stat-icon warning">📊</div>
             </div>
-            <div class="stat-trend positive">+12% vs. mois dernier</div>
+            <div class="stat-trend positive">Live</div>
         </article>
     </section>
 
     <section class="availability-section" id="availability">
         <div class="section-header">
             <h2 class="section-title">⏰ Ma disponibilité</h2>
-            <span class="status-badge available">● Disponible</span>
+            <c:choose>
+                <c:when test="${not empty todayAvailabilities}">
+                    <span class="status-badge available">● Disponible</span>
+                </c:when>
+                <c:otherwise>
+                    <span class="status-badge offline">● Hors ligne</span>
+                </c:otherwise>
+            </c:choose>
         </div>
 
         <div class="availability-grid">
-            <div class="time-slot active">
-                <div class="slot-header">
-                    <span class="slot-time">08:00 - 12:00</span>
-                    <div class="slot-toggle on"></div>
+            <c:if test="${empty todayAvailabilities}">
+                <div class="time-slot">
+                    <div class="slot-header">
+                        <span class="slot-time">—</span>
+                        <div class="slot-toggle"></div>
+                    </div>
+                    <div class="slot-info">
+                        Aucune disponibilité aujourd’hui
+                    </div>
                 </div>
-                <div class="slot-info">
-                    Matinée • Disponible<br>
-                    Salle de consultation A
+            </c:if>
+            <c:forEach var="slot" items="${todayAvailabilities}">
+                <div class="time-slot active">
+                    <div class="slot-header">
+                        <span class="slot-time">${slot.heureDebut} - ${slot.heureFin}</span>
+                        <div class="slot-toggle on"></div>
+                    </div>
+                    <div class="slot-info">
+                        Créneau • Disponible<br>
+                        Cabinet
+                    </div>
                 </div>
-            </div>
-
-            <div class="time-slot">
-                <div class="slot-header">
-                    <span class="slot-time">12:00 - 14:00</span>
-                    <div class="slot-toggle"></div>
-                </div>
-                <div class="slot-info">
-                    Pause déjeuner<br>
-                    Non disponible
-                </div>
-            </div>
-
-            <div class="time-slot active">
-                <div class="slot-header">
-                    <span class="slot-time">14:00 - 18:00</span>
-                    <div class="slot-toggle on"></div>
-                </div>
-                <div class="slot-info">
-                    Après-midi • Disponible<br>
-                    Salle de consultation B
-                </div>
-            </div>
-
-            <div class="time-slot">
-                <div class="slot-header">
-                    <span class="slot-time">18:00 - 20:00</span>
-                    <div class="slot-toggle"></div>
-                </div>
-                <div class="slot-info">
-                    Soirée • Non disponible<br>
-                    Urgences uniquement
-                </div>
-            </div>
+            </c:forEach>
         </div>
     </section>
 
@@ -506,85 +494,46 @@
             <h2 class="section-title">📅 Mes rendez-vous du jour</h2>
         </div>
 
-        <div class="appointment-card">
-            <div class="appointment-header">
-                <div class="patient-info">
-                    <h3>Ahmed Benani</h3>
-                    <p>Patient #12458 • Consultation de suivi</p>
+        <c:if test="${empty appointments}">
+            <div class="appointment-card">
+                <div class="appointment-header">
+                    <div class="patient-info">
+                        <h3>Aucun rendez-vous</h3>
+                        <p>Vous n'avez pas de rendez-vous programmés aujourd'hui.</p>
+                    </div>
                 </div>
-                <div class="appointment-time">09:00 - 09:30</div>
             </div>
-            <div class="appointment-details">
-                <div class="detail-item">📋 Type: Consultation générale</div>
-                <div class="detail-item">🏥 Salle: Consultation A</div>
-                <div class="detail-item">📞 Tél: 0612345678</div>
-            </div>
-            <div class="appointment-actions">
-                <button class="btn-sm primary" onclick="openNoteModal('Ahmed Benani', '09:00')">📝 Ajouter note</button>
-                <button class="btn-sm outline">👁️ Voir dossier</button>
-            </div>
-        </div>
+        </c:if>
 
-        <div class="appointment-card">
-            <div class="appointment-header">
-                <div class="patient-info">
-                    <h3>Fatima Zahra El Amrani</h3>
-                    <p>Patient #12459 • Première consultation</p>
+        <c:forEach var="a" items="${appointments}">
+            <div class="appointment-card">
+                <div class="appointment-header">
+                    <div class="patient-info">
+                        <h3><c:out value="${a.patient.user.name}"/></h3>
+                        <p>
+                            <c:choose>
+                                <c:when test="${not empty a.type}">Type: <c:out value="${a.type}"/></c:when>
+                                <c:otherwise>Type: Consultation</c:otherwise>
+                            </c:choose>
+                        </p>
+                    </div>
+                    <div class="appointment-time"><c:out value="${a.hour}"/></div>
                 </div>
-                <div class="appointment-time">10:00 - 10:45</div>
-            </div>
-            <div class="appointment-details">
-                <div class="detail-item">📋 Type: Examen complet</div>
-                <div class="detail-item">🏥 Salle: Consultation A</div>
-                <div class="detail-item">📞 Tél: 0623456789</div>
-            </div>
-            <div class="appointment-actions">
-                <button class="btn-sm primary" onclick="openNoteModal('Fatima Zahra El Amrani', '10:00')">📝 Ajouter note</button>
-                <button class="btn-sm outline">👁️ Voir dossier</button>
-            </div>
-        </div>
-
-        <div class="appointment-card">
-            <div class="appointment-header">
-                <div class="patient-info">
-                    <h3>Youssef Alami</h3>
-                    <p>Patient #12460 • Contrôle post-opératoire</p>
+                <div class="appointment-details">
+                    <div class="detail-item">📋 Statut: <c:out value="${a.statut}"/></div>
+                    <c:if test="${not empty a.patient.telephone}">
+                        <div class="detail-item">📞 Tél: <c:out value="${a.patient.telephone}"/></div>
+                    </c:if>
                 </div>
-                <div class="appointment-time">11:15 - 11:45</div>
-            </div>
-            <div class="appointment-details">
-                <div class="detail-item">📋 Type: Suivi chirurgical</div>
-                <div class="detail-item">🏥 Salle: Consultation A</div>
-                <div class="detail-item">📞 Tél: 0634567890</div>
-            </div>
-            <div class="appointment-actions">
-                <button class="btn-sm primary" onclick="openNoteModal('Youssef Alami', '11:15')">📝 Ajouter note</button>
-                <button class="btn-sm outline">👁️ Voir dossier</button>
-            </div>
-        </div>
-
-        <div class="appointment-card">
-            <div class="appointment-header">
-                <div class="patient-info">
-                    <h3>Samira Idrissi</h3>
-                    <p>Patient #12461 • Consultation de routine</p>
+                <div class="appointment-actions">
+                    <button class="btn-sm primary" onclick="openNoteModal('<c:out value='${a.patient.user.name}'/>','<c:out value='${a.hour}'/>')">📝 Ajouter note</button>
+                    <button class="btn-sm outline">👁️ Voir dossier</button>
                 </div>
-                <div class="appointment-time">14:30 - 15:00</div>
             </div>
-            <div class="appointment-details">
-                <div class="detail-item">📋 Type: Bilan de santé</div>
-                <div class="detail-item">🏥 Salle: Consultation B</div>
-                <div class="detail-item">📞 Tél: 0645678901</div>
-            </div>
-            <div class="appointment-actions">
-                <button class="btn-sm primary" onclick="openNoteModal('Samira Idrissi', '14:30')">📝 Ajouter note</button>
-                <button class="btn-sm outline">👁️ Voir dossier</button>
-            </div>
-        </div>
+        </c:forEach>
     </section>
 </main>
 
-<!-- Modal pour ajouter une note -->
 <div class="modal" id="noteModal">
     <div class="modal-content">
         <div class="modal-header">
@@ -593,11 +542,39 @@
         </div>
         <div class="form-group">
             <label>Patient</label>
-            <input type="text" id="patientName" readonly style="width:100%;padding:0.85rem;border:2px solid var(--border);border-radius:12px;background:var(--bg);font-weight:600;">
+            <input type="text" id="patientName" readonly style="width:100%;padding:0.85rem;border:2px solid var(--border);border-radius:12px;background:var(--bg);font-weight:600;"/>
         </div>
         <div class="form-group">
             <label>Heure de consultation</label>
-            <input type="text" id="appointmentTime" readonly style="width:100%;padding:0.85rem;border:2px solid var(--border);border-radius:12px;background:var(--bg);font-weight:600;">
+            <input type="text" id="appointmentTime" readonly style="width:100%;padding:0.85rem;border:2px solid var(--border);border-radius:12px;background:var(--bg);font-weight:600;"/>
         </div>
         <div class="form-group">
+            <label>Note</label>
+            <textarea id="noteText" placeholder="Écrire une note..." ></textarea>
+        </div>
+        <div style="display:flex;gap:0.75rem;justify-content:flex-end;">
+            <button class="btn btn-outline" onclick="closeNoteModal()">Annuler</button>
+            <button class="btn btn-primary" onclick="saveNote()">Enregistrer</button>
+        </div>
+    </div>
+</div>
 
+<script>
+    function openNoteModal(name, time) {
+        try {
+            document.getElementById('patientName').value = name || '';
+            document.getElementById('appointmentTime').value = time || '';
+            document.getElementById('noteModal').classList.add('active');
+        } catch (e) { console.error(e); }
+    }
+    function closeNoteModal() {
+        document.getElementById('noteModal').classList.remove('active');
+    }
+    function saveNote() {
+        // TODO: brancher l'enregistrement de note si besoin
+        closeNoteModal();
+        alert('Note enregistrée');
+    }
+</script>
+</body>
+</html>

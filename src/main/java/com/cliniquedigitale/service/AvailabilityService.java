@@ -11,6 +11,8 @@ import com.cliniquedigitale.repository.DoctorRepository;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 
+import java.time.DayOfWeek;
+import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.*;
 
@@ -46,6 +48,30 @@ public class AvailabilityService {
         List<Availability> availables = new ArrayList<>();
         for (Availability a : all) if (a.getStatut() == StatutDispo.AVAILABLE) availables.add(a);
         return availabilityMapper.toDTOList(availables);
+    }
+
+    public List<AvailabilityDTO> getTodayAvailabilityByEmail(String userEmail) {
+        if (userEmail == null || userEmail.isBlank()) return Collections.emptyList();
+        Doctor doctor = doctorRepository.findByUserEmail(userEmail);
+        if (doctor == null) return Collections.emptyList();
+        Jour todayJour = mapToJour(LocalDate.now().getDayOfWeek());
+        List<Availability> list = availabilityRepository.findByDoctorAndJour(doctor, todayJour);
+        List<Availability> availables = new ArrayList<>();
+        for (Availability a : list) if (a.getStatut() == StatutDispo.AVAILABLE) availables.add(a);
+        availables.sort(Comparator.comparing(Availability::getHeureDebut, Comparator.nullsLast(Comparator.naturalOrder())));
+        return availabilityMapper.toDTOList(availables);
+    }
+
+    private Jour mapToJour(DayOfWeek dow) {
+        return switch (dow) {
+            case MONDAY -> Jour.LUNDI;
+            case TUESDAY -> Jour.MARDI;
+            case WEDNESDAY -> Jour.MERCREDI;
+            case THURSDAY -> Jour.JEUDI;
+            case FRIDAY -> Jour.VENDREDI;
+            case SATURDAY -> Jour.SAMEDI;
+            case SUNDAY -> Jour.DIMANCHE;
+        };
     }
 
     @SuppressWarnings("unused")
