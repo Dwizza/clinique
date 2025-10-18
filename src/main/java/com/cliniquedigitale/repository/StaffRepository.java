@@ -1,8 +1,5 @@
 package com.cliniquedigitale.repository;
 
-
-
-public class StaffRepository {
-
+public interface StaffRepository {
 
 }

@@ -9,12 +9,20 @@ import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
 
-@WebServlet("/doctor")
+@WebServlet("/doctor/*")
 public class DoctorServlet extends HttpServlet {
 
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
         throws ServletException, IOException {
-        request.getRequestDispatcher("/WEB-INF/view/doctor/dashboard.jsp").forward(request, response);
+        String path = request.getPathInfo();
+
+        if ("/availability".equals(path)){
+            request.getRequestDispatcher("/WEB-INF/view/doctor/availability.jsp").forward(request, response);
+        } else if ("/dashboard".equals(path)) {
+            request.getRequestDispatcher("/WEB-INF/view/doctor/dashboard.jsp").forward(request, response);
+        } else if ("/appointments".equals(path)) {
+            request.getRequestDispatcher("/WEB-INF/view/doctor/appointment.jsp").forward(request, response);
+        }
     }
 }

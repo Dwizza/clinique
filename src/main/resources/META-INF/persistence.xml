@@ -9,6 +9,8 @@
     <!-- classes d’entités -->
     <class>com.cliniquedigitale.entities.User</class>
     <class>com.cliniquedigitale.entities.Patient</class>
+    <class>com.cliniquedigitale.entities.Doctor</class>
+    <class>com.cliniquedigitale.entities.Availability</class>
 
     <properties>
       <property name="jakarta.persistence.jdbc.url" value="jdbc:postgresql://localhost:5434/clinique"/>

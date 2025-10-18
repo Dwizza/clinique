@@ -153,7 +153,7 @@ public class AuthServlet extends HttpServlet {
             switch (user.getRole()) {
                 case ADMIN -> response.sendRedirect(request.getContextPath() + "/admin");
                 case PATIENT -> response.sendRedirect(request.getContextPath() + "/patient");
-                case DOCTOR -> response.sendRedirect(request.getContextPath() + "/doctor");
+                case DOCTOR -> response.sendRedirect(request.getContextPath() + "/doctor/dashboard");
                 case STAFF -> response.sendRedirect(request.getContextPath() + "/staff");
                 default -> response.sendRedirect(request.getContextPath() + "/auth/login?error=role");
             }

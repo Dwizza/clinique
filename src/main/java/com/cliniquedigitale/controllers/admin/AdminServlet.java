@@ -8,6 +8,7 @@ import com.cliniquedigitale.DTO.Response.ResponseUserDTO;
 import com.cliniquedigitale.Enums.Role;
 import com.cliniquedigitale.entities.Patient;
 import com.cliniquedigitale.entities.Specialty;
+import com.cliniquedigitale.entities.User;
 import com.cliniquedigitale.service.*;
 import jakarta.inject.Inject;
 import jakarta.servlet.ServletException;
@@ -42,6 +43,9 @@ public class AdminServlet extends HttpServlet {
     @Inject
     private DoctorSevice doctorSevice;
 
+    @Inject
+    private UserService userService;
+
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
@@ -51,11 +55,31 @@ public class AdminServlet extends HttpServlet {
             response.sendRedirect(request.getContextPath() + "/auth/login");
             return;
         }
+
+        String path = request.getPathInfo();
+        if (path != null && path.equals("/users/toggle")) {
+            handleToggleUserStatus(request, response);
+            return;
+        }
+
+        List<User> allUsers = userService.getAllUsers();
+        List<User> doctors = userService.getUsersByRole(Role.DOCTOR);
+        List<User> staffMembers = userService.getUsersByRole(Role.STAFF);
+        List<User> patients = userService.getUsersByRole(Role.PATIENT);
+
+        request.setAttribute("allUsers", allUsers);
+        request.setAttribute("doctors", doctors);
+        request.setAttribute("staffMembers", staffMembers);
+        request.setAttribute("patients", patients);
+
+        request.setAttribute("totalUsers", allUsers.size());
+        request.setAttribute("totalDoctors", doctors.size());
+        request.setAttribute("totalStaff", staffMembers.size());
+        request.setAttribute("totalPatients", patients.size());
+        request.setAttribute("activeUsers", userService.countActiveUsers());
+
         List<DepartmentDTO> departments = departmentService.getAll();
         request.setAttribute("departments", departments);
-
-        List<Patient> patients = patientService.getAll();
-        request.setAttribute("patients", patients);
 
         List<Specialty> specialities = specialtyService.getAll();
         request.setAttribute("specialities", specialities);
@@ -74,8 +98,27 @@ public class AdminServlet extends HttpServlet {
 
         if ("/users/create".equals(path)) {
             handleCreateUsers(request, response);
+        } else if ("/users/toggle".equals(path)) {
+            handleToggleUserStatus(request, response);
         } else {
             response.sendError(HttpServletResponse.SC_NOT_FOUND);
+        }
+    }
+
+    private void handleToggleUserStatus(HttpServletRequest request, HttpServletResponse response) throws IOException {
+        try {
+            String userIdStr = request.getParameter("userId");
+            if (userIdStr == null || userIdStr.isEmpty()) {
+                response.sendRedirect(request.getContextPath() + "/admin?error=invalidUserId");
+                return;
+            }
+
+            UUID userId = UUID.fromString(userIdStr);
+            userService.toggleUserStatus(userId);
+
+            response.sendRedirect(request.getContextPath() + "/admin?success=statusUpdated");
+        } catch (Exception e) {
+            response.sendRedirect(request.getContextPath() + "/admin?error=updateFailed");
         }
     }
 

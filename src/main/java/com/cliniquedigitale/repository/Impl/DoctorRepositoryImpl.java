@@ -4,10 +4,10 @@ import com.cliniquedigitale.config.JpaUtil;
 import com.cliniquedigitale.entities.Doctor;
 import com.cliniquedigitale.repository.DoctorRepository;
 import jakarta.enterprise.context.ApplicationScoped;
-import jakarta.persistence.Entity;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.NoResultException;
 import jakarta.persistence.TypedQuery;
+import java.util.UUID;
 
 
 @ApplicationScoped
@@ -38,6 +38,30 @@ public class DoctorRepositoryImpl implements DoctorRepository {
             return q.getSingleResult();
         } catch (NoResultException e) {
             return null;
+        } finally {
+            em.close();
+        }
+    }
+
+    @Override
+    public Doctor findByUserEmail(String email) {
+        EntityManager em = JpaUtil.getEntityManager();
+        try {
+            TypedQuery<Doctor> q = em.createQuery("SELECT d FROM Doctor d WHERE d.user.email = :email", Doctor.class);
+            q.setParameter("email", email);
+            return q.getSingleResult();
+        } catch (NoResultException e) {
+            return null;
+        } finally {
+            em.close();
+        }
+    }
+
+    @Override
+    public Doctor findById(UUID id) {
+        EntityManager em = JpaUtil.getEntityManager();
+        try {
+            return em.find(Doctor.class, id);
         } finally {
             em.close();
         }
