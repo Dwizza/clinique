@@ -1135,7 +1135,6 @@
                                             </svg>
                                             <span>${doctor.user.email}</span>
                                         </div>
-                                        <!-- Suppression du téléphone: propriété inexistante sur User -->
                                     </div>
 
                                     <div class="appointment-actions">
