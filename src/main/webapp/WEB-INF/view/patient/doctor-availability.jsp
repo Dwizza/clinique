@@ -212,7 +212,7 @@
     const day = parseInt(dayEl.dataset.day, 10);
     const jsDate = new Date(year, month-1, day);
     const jour = toJour(jsDate);
-   
+
     modalDate.textContent = "Pour le " + jsDate.getFullYear() + "-" + pad(jsDate.getMonth()+1) + "-" + pad(jsDate.getDate()) + " (" + jour + ")";
 
     const ranges = weeklySlots[jour] || [];
@@ -228,7 +228,6 @@
         b.addEventListener('click', ()=>{
           document.querySelectorAll('#modalSlots .slot.selected').forEach(x=>x.classList.remove('selected'));
           b.classList.add('selected');
-          // Ici, on pourrait rediriger vers une étape de confirmation si besoin
         });
         modalSlots.appendChild(b);
       }
