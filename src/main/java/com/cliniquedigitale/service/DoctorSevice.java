@@ -68,4 +68,9 @@ public class DoctorSevice {
     public List<Doctor> getDoctorsBySpeciality(UUID specialityId) {
         return doctorRepository.findBySpeciality(specialityId);
     }
+
+    public Doctor getDoctorById(UUID id) {
+        if (id == null) return null;
+        return doctorRepository.findById(id);
+    }
 }

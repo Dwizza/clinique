@@ -179,4 +179,24 @@ public class AvailabilityService {
             availabilityRepository.save(a);
         }
     }
+
+    public List<AvailabilityDTO> getAvailabilityByDoctorId(UUID doctorId) {
+        if (doctorId == null) return Collections.emptyList();
+        List<Availability> all = availabilityRepository.findByDoctor(doctorId);
+        List<Availability> availables = new ArrayList<>();
+        for (Availability a : all) if (a.getStatut() == StatutDispo.AVAILABLE) availables.add(a);
+        availables.sort(Comparator
+                .comparing(Availability::getJour)
+                .thenComparing(Availability::getHeureDebut, Comparator.nullsLast(Comparator.naturalOrder())));
+        return availabilityMapper.toDTOList(availables);
+    }
+
+    public List<AvailabilityDTO> getAvailabilityByDoctorId(String doctorIdStr) {
+        if (doctorIdStr == null || doctorIdStr.isBlank()) return Collections.emptyList();
+        try {
+            return getAvailabilityByDoctorId(UUID.fromString(doctorIdStr));
+        } catch (IllegalArgumentException ex) {
+            return Collections.emptyList();
+        }
+    }
 }
