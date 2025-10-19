@@ -191,7 +191,6 @@
   modal.addEventListener('click', (e)=>{ if(e.target===modal) closeModal(); });
 
   function buildSlots(ranges){
-    // ranges: array of strings 'HH:MM - HH:MM'
     const set = new Set();
     for(const label of ranges){
       const parts = label.split('-');
