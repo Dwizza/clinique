@@ -1,6 +1,7 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <%@ taglib uri="jakarta.tags.core" prefix="c" %>
 <%@ taglib uri="jakarta.tags.fmt" prefix="fmt" %>
+<%@ taglib uri="jakarta.tags.functions" prefix="fn" %>
     <!DOCTYPE html>
     <html lang="fr">
     <head>
@@ -400,6 +401,60 @@
             .welcome-content p {
                 color: var(--text-light);
                 font-size: 1.1rem;
+            }
+
+            /* Search Doctors Section */
+            .search-doctors-section {
+                margin-bottom: 2rem;
+            }
+
+            .search-doctors-section .card {
+                background: var(--bg-overlay);
+                backdrop-filter: blur(20px);
+                border-radius: 20px;
+                padding: 2rem;
+                box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+                position: relative;
+                overflow: hidden;
+            }
+
+            .search-doctors-section .card::before {
+                content: '';
+                position: absolute;
+                top: 0;
+                left: 0;
+                right: 0;
+                height: 4px;
+                background: linear-gradient(90deg, var(--primary), var(--secondary), var(--primary-light));
+                background-size: 200% 100%;
+                animation: shimmer 3s infinite;
+            }
+
+            .search-doctors-section .card-header {
+                display: flex;
+                align-items: center;
+                gap: 1rem;
+                margin-bottom: 1.5rem;
+            }
+
+            .search-doctors-section .card-icon {
+                width: 60px;
+                height: 60px;
+                background: linear-gradient(135deg, var(--primary), var(--primary-light));
+                border-radius: 16px;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                box-shadow: 0 4px 12px rgba(99, 102, 241, 0.4);
+            }
+
+            .search-doctors-section .card-title {
+                font-size: 1.5rem;
+                font-weight: 700;
+                background: linear-gradient(135deg, var(--primary), var(--secondary));
+                -webkit-background-clip: text;
+                -webkit-text-fill-color: transparent;
+                background-clip: text;
             }
 
             /* Dashboard Grid */
@@ -867,7 +922,12 @@
                 <div class="user-section">
                     <div class="user-menu-btn" onclick="toggleUserMenu()">
                         <div class="user-avatar">
-                            ${sessionScope.user.name.substring(0,1)}
+                            <c:choose>
+                                <c:when test="${not empty sessionScope.user.name}">
+                                    ${fn:toUpperCase(fn:substring(sessionScope.user.name, 0, 1))}
+                                </c:when>
+                                <c:otherwise>?</c:otherwise>
+                            </c:choose>
                         </div>
                         <div class="user-info">
                             <div class="user-name">${sessionScope.user.name}</div>
@@ -883,7 +943,12 @@
                         <div class="dropdown-header">
                             <div class="dropdown-user-info">
                                 <div class="dropdown-avatar">
-                                    ${sessionScope.user.name.substring(0,1)}
+                                    <c:choose>
+                                        <c:when test="${not empty sessionScope.user.name}">
+                                            ${fn:toUpperCase(fn:substring(sessionScope.user.name, 0, 1))}
+                                        </c:when>
+                                        <c:otherwise>?</c:otherwise>
+                                    </c:choose>
                                 </div>
                                 <div class="dropdown-user-details">
                                     <div class="user-name">${sessionScope.user.name}</div>
@@ -957,6 +1022,140 @@
                 </button>
             </div>
 
+            <!-- Search Doctors Section -->
+            <div class="card" style="margin-bottom: 2rem;">
+                <div class="card-header">
+                    <div class="card-icon">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2">
+                            <circle cx="11" cy="11" r="8"></circle>
+                            <path d="m21 21-4.35-4.35"></path>
+                        </svg>
+                    </div>
+                    <h2 class="card-title">Rechercher un Médecin</h2>
+                </div>
+
+                <form action="${pageContext.request.contextPath}/patient" method="get" style="margin-bottom: 1.5rem;">
+                    <div style="display: flex; gap: 1rem;">
+                        <input type="text"
+                               name="search"
+                               class="form-input"
+                               placeholder="Rechercher par nom de médecin ou spécialité..."
+                               value="${searchTerm}"
+                               style="flex: 1;">
+                        <button type="submit" class="btn btn-primary">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <circle cx="11" cy="11" r="8"></circle>
+                                <path d="m21 21-4.35-4.35"></path>
+                            </svg>
+                            Rechercher
+                        </button>
+                        <c:if test="${not empty searchTerm}">
+                            <a href="${pageContext.request.contextPath}/patient" class="btn btn-outline">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <line x1="18" y1="6" x2="6" y2="18"></line>
+                                    <line x1="6" y1="6" x2="18" y2="18"></line>
+                                </svg>
+                                Réinitialiser
+                            </a>
+                        </c:if>
+                    </div>
+                </form>
+
+                <c:if test="${not empty searchTerm}">
+                    <div class="alert alert-success" style="margin-bottom: 1rem;">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
+                            <polyline points="22 4 12 14.01 9 11.01"></polyline>
+                        </svg>
+                        <span>${doctors.size()} résultat(s) trouvé(s) pour "${searchTerm}"</span>
+                    </div>
+                </c:if>
+
+                <!-- Search Doctors Section list -->
+                <div class="appointments-list" style="max-height: 500px;">
+                    <c:choose>
+                        <c:when test="${empty doctors}">
+                            <div class="empty-state">
+                                <svg class="empty-icon" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.172 16.172a4 4 0 015.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                </svg>
+                                <p class="empty-text">
+                                    <c:choose>
+                                        <c:when test="${not empty searchTerm}">
+                                            Aucun médecin trouvé pour "${searchTerm}".<br>Essayez avec un autre terme de recherche.
+                                        </c:when>
+                                        <c:otherwise>
+                                            Aucun médecin disponible pour le moment.
+                                        </c:otherwise>
+                                    </c:choose>
+                                </p>
+                            </div>
+                        </c:when>
+                        <c:otherwise>
+                            <c:forEach var="doctor" items="${doctors}">
+                                <div class="appointment-item">
+                                    <div style="display: flex; align-items: center; gap: 1.5rem; margin-bottom: 1rem;">
+                                        <div class="user-avatar" style="width: 60px; height: 60px; font-size: 1.5rem;">
+                                            <c:choose>
+                                                <c:when test="${not empty doctor.user.name}">
+                                                    ${fn:toUpperCase(fn:substring(doctor.user.name, 0, 1))}
+                                                </c:when>
+                                                <c:otherwise>?</c:otherwise>
+                                            </c:choose>
+                                        </div>
+                                        <div style="flex: 1;">
+                                            <h3 style="font-size: 1.25rem; font-weight: 700; color: var(--text); margin-bottom: 0.25rem;">
+                                                Dr. ${doctor.user.name}
+                                            </h3>
+                                            <p style="color: var(--text-light); font-size: 0.95rem;">
+                                                ${doctor.titre != null ? doctor.titre : 'Médecin'}
+                                            </p>
+                                        </div>
+                                    </div>
+
+                                    <div class="appointment-info" style="margin-bottom: 1rem;">
+                                        <div class="info-item">
+                                            <!-- spécialité -->
+                                            <svg class="info-icon" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19.428 15.428a2 2 0 00-1.022-.547l-2.387-.477a6 6 0 00-3.86.517l-.318.158a6 6 0 01-3.86.517L6.05 15.21a2 2 0 00-1.806.547M8 4h8l-1 1v5.172a2 2 0 00.586 1.414l5 5c1.26 1.26.367 3.414-1.415 3.414H4.828c-1.782 0-2.674-2.154-1.414-3.414l5-5A2 2 0 009 10.172V5L8 4z" />
+                                            </svg>
+                                            <span><strong>${doctor.specialite.name}</strong></span>
+                                        </div>
+                                        <div class="info-item">
+                                            <!-- matricule -->
+                                            <svg class="info-icon" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                                            </svg>
+                                            <span>Matricule: ${doctor.matricule}</span>
+                                        </div>
+                                        <div class="info-item">
+                                            <!-- email -->
+                                            <svg class="info-icon" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 0 1-2-2V7a2 2 0 0 1 2-2h4"></path>
+                                            </svg>
+                                            <span>${doctor.user.email}</span>
+                                        </div>
+                                        <!-- Suppression du téléphone: propriété inexistante sur User -->
+                                    </div>
+
+                                    <div class="appointment-actions">
+                                        <button class="btn btn-primary" onclick="openBookingModalWithDoctor('${doctor.id}', 'Dr. ${doctor.user.name}', '${doctor.specialite.id}')">
+                                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                                <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
+                                                <line x1="16" y1="2" x2="16" y2="6"></line>
+                                                <line x1="8" y1="2" x2="8" y2="6"></line>
+                                                <line x1="3" y1="10" x2="21" y2="10"></line>
+                                            </svg>
+                                            Prendre Rendez-vous
+                                        </button>
+                                    </div>
+                                </div>
+                            </c:forEach>
+                        </c:otherwise>
+                    </c:choose>
+                </div>
+            </div>
+
             <!-- Dashboard Grid -->
             <div class="dashboard-grid">
                 <!-- Appointments List Card -->
@@ -978,7 +1177,7 @@
                             <c:when test="${empty appointments}">
                                 <div class="empty-state">
                                     <svg class="empty-icon" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 0 1-2-2V7a2 2 0 0 1 2-2h4"></path>
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
                                     </svg>
                                     <p class="empty-text">Vous n'avez aucun rendez-vous pour le moment.<br>Cliquez sur "Nouveau Rendez-vous" pour en créer un.</p>
                                 </div>
@@ -1003,25 +1202,25 @@
 
                                         <div class="appointment-info">
                                             <div class="info-item">
-                                                <svg class="info-icon" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                <svg class="info-icon" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
                                                 </svg>
                                                 <span><fmt:formatDate value="${appointment.hour}" pattern="HH:mm" /></span>
                                             </div>
                                             <div class="info-item">
-                                                <svg class="info-icon" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                <svg class="info-icon" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
                                                 </svg>
-                                                <span>Dr. ${appointment.doctor.user.nom} ${appointment.doctor.user.prenom}</span>
+                                                <span>Dr. ${appointment.doctor.user.name}</span>
                                             </div>
                                             <div class="info-item">
-                                                <svg class="info-icon" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                <svg class="info-icon" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19.428 15.428a2 2 0 00-1.022-.547l-2.387-.477a6 6 0 00-3.86.517l-.318.158a6 6 0 01-3.86.517L6.05 15.21a2 2 0 00-1.806.547M8 4h8l-1 1v5.172a2 2 0 00.586 1.414l5 5c1.26 1.26.367 3.414-1.415 3.414H4.828c-1.782 0-2.674-2.154-1.414-3.414l5-5A2 2 0 009 10.172V5L8 4z" />
                                                 </svg>
-                                                <span>${appointment.doctor.specialite.nom}</span>
+                                                <span>${appointment.doctor.specialite.name}</span>
                                             </div>
                                             <div class="info-item">
-                                                <svg class="info-icon" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                <svg class="info-icon" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z" />
                                                 </svg>
                                                 <span>${appointment.type}</span>
@@ -1066,8 +1265,8 @@
                         <label class="form-label" for="speciality">Spécialité</label>
                         <select class="form-select" id="speciality" name="specialityId" required onchange="loadDoctors(this.value)">
                             <option value="">Choisir une spécialité</option>
-                            <c:forEach var="speciality" items="${specialities}">
-                                <option value="${speciality.id}">${speciality.nom}</option>
+                            <c:forEach var="speciality" items="${specialties}">
+                                <option value="${speciality.id}">${speciality.name}</option>
                             </c:forEach>
                         </select>
                     </div>
@@ -1081,7 +1280,7 @@
 
                     <div class="form-group">
                         <label class="form-label" for="date">Date</label>
-                        <input type="date" class="form-input" id="date" name="date" required min="${today}">
+                        <input type="date" class="form-input" id="date" name="date" required>
                     </div>
 
                     <div class="form-group">
@@ -1210,7 +1409,7 @@
                         doctors.forEach(doctor => {
                             const option = document.createElement('option');
                             option.value = doctor.id;
-                            option.textContent = 'Dr. ' + doctor.user.nom + ' ' + doctor.user.prenom;
+                            option.textContent = 'Dr. ' + doctor.user.name;
                             doctorSelect.appendChild(option);
                         });
                     })
@@ -1218,6 +1417,24 @@
                         console.error('Error loading doctors:', error);
                         doctorSelect.innerHTML = '<option value="">Erreur de chargement</option>';
                     });
+            }
+
+            // Open booking modal with pre-selected doctor
+            function openBookingModalWithDoctor(doctorId, doctorName, specialityId) {
+                openBookingModal();
+
+                // Pre-select speciality
+                const specialitySelect = document.getElementById('speciality');
+                specialitySelect.value = specialityId;
+
+                // Load doctors for this speciality and pre-select the doctor
+                loadDoctors(specialityId);
+
+                // Wait a bit for doctors to load, then select the doctor
+                setTimeout(function() {
+                    const doctorSelect = document.getElementById('doctor');
+                    doctorSelect.value = doctorId;
+                }, 500);
             }
 
             // Close modals when clicking outside

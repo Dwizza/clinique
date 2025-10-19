@@ -15,6 +15,9 @@ import com.cliniquedigitale.repository.UserRepository;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 
+import java.util.List;
+import java.util.UUID;
+
 @ApplicationScoped
 public class DoctorSevice {
 
@@ -49,5 +52,20 @@ public class DoctorSevice {
         doctorRepository.save(doctor);
 
         return UserMapper.toResponse(persistedUser);
+    }
+
+    public List<Doctor> searchDoctors(String searchTerm) {
+        if (searchTerm == null || searchTerm.trim().isEmpty()) {
+            return doctorRepository.findAll();
+        }
+        return doctorRepository.searchDoctors(searchTerm.trim());
+    }
+
+    public List<Doctor> getAllDoctors() {
+        return doctorRepository.findAll();
+    }
+
+    public List<Doctor> getDoctorsBySpeciality(UUID specialityId) {
+        return doctorRepository.findBySpeciality(specialityId);
     }
 }
