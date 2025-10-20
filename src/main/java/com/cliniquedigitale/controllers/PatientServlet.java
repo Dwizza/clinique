@@ -13,11 +13,17 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 
 import java.io.IOException;
+import java.io.PrintWriter;
 import java.util.List;
 import java.util.UUID;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
+
+import com.google.gson.Gson;
 
 
-@WebServlet("/patient")
+@WebServlet(urlPatterns = {"/patient", "/patient/doctors"})
 public class PatientServlet extends HttpServlet {
 
     @Inject
@@ -33,15 +39,19 @@ public class PatientServlet extends HttpServlet {
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
 
+        String servletPath = request.getServletPath();
+        if ("/patient/doctors".equals(servletPath)) {
+            handleDoctorsBySpeciality(request, response);
+            return;
+        }
+
         String searchTerm = request.getParameter("search");
         String specialityIdParam = request.getParameter("speciality");
         List<Doctor> doctors;
 
-        // Charger toutes les spécialités pour le select
         List<Specialty> specialties = specialtyService.getAll();
         request.setAttribute("specialties", specialties);
 
-        // Filtrer les médecins selon les critères
         if (specialityIdParam != null && !specialityIdParam.trim().isEmpty()) {
             try {
                 UUID specialityId = UUID.fromString(specialityIdParam);
@@ -59,6 +69,33 @@ public class PatientServlet extends HttpServlet {
 
         request.setAttribute("doctors", doctors);
         request.getRequestDispatcher("/WEB-INF/view/patient/dashboard.jsp").forward(request, response);
+    }
+
+    private void handleDoctorsBySpeciality(HttpServletRequest request, HttpServletResponse response) throws IOException {
+        String specialityId = request.getParameter("specialityId");
+        List<Map<String, Object>> out = new ArrayList<>();
+        try {
+            if (specialityId != null && !specialityId.isBlank()) {
+                UUID id = UUID.fromString(specialityId);
+                List<Doctor> doctors = doctorService.getDoctorsBySpeciality(id);
+                for (Doctor d : doctors) {
+                    Map<String, Object> dto = new HashMap<>();
+                    dto.put("id", d.getId());
+                    dto.put("user", Map.of("name", d.getUser() != null ? d.getUser().getName() : ""));
+                    out.add(dto);
+                }
+            }
+            response.setContentType("application/json;charset=UTF-8");
+            try (PrintWriter w = response.getWriter()) {
+                w.write(new Gson().toJson(out));
+            }
+        } catch (Exception e) {
+            response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+            response.setContentType("application/json;charset=UTF-8");
+            try (PrintWriter w = response.getWriter()) {
+                w.write("[]");
+            }
+        }
     }
 
     @Override

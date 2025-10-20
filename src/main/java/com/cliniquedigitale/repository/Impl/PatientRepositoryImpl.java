@@ -48,6 +48,23 @@ public class PatientRepositoryImpl implements PatientRepository {
     }
 
     @Override
+    public Patient findByUserEmail(String email) {
+        if (email == null || email.isBlank()) return null;
+        EntityManager em = JpaUtil.getEntityManager();
+        try {
+            TypedQuery<Patient> query = em.createQuery(
+                    "SELECT p FROM Patient p JOIN FETCH p.user u WHERE u.email = :email", Patient.class
+            );
+            query.setParameter("email", email);
+            return query.getSingleResult();
+        } catch (NoResultException e) {
+            return null;
+        } finally {
+            em.close();
+        }
+    }
+
+    @Override
     public List<Patient> findAll() {
         EntityManager em = JpaUtil.getEntityManager();
         try {

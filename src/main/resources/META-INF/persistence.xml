@@ -10,48 +10,18 @@
     <class>com.cliniquedigitale.entities.User</class>
     <class>com.cliniquedigitale.entities.Patient</class>
     <class>com.cliniquedigitale.entities.Doctor</class>
+    <class>com.cliniquedigitale.entities.Specialty</class>
     <class>com.cliniquedigitale.entities.Availability</class>
+    <class>com.cliniquedigitale.entities.Appointment</class>
 
     <properties>
       <property name="jakarta.persistence.jdbc.url" value="jdbc:postgresql://localhost:5434/clinique"/>
       <property name="jakarta.persistence.jdbc.user" value="root"/>
       <property name="jakarta.persistence.jdbc.password" value="1234"/>
       <property name="jakarta.persistence.jdbc.driver" value="org.postgresql.Driver"/>
-
       <property name="hibernate.hbm2ddl.auto" value="update"/>
       <property name="hibernate.show_sql" value="true"/>
-      <!-- ne pas définir hibernate.dialect -->
     </properties>
   </persistence-unit>
 </persistence>
 
-
-<!--<?xml version="1.0" encoding="UTF-8"?>-->
-<!--<persistence xmlns="http://xmlns.jcp.org/xml/ns/persistence"-->
-<!--             xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"-->
-<!--             xsi:schemaLocation="http://xmlns.jcp.org/xml/ns/persistence http://xmlns.jcp.org/xml/ns/persistence/persistence_2_2.xsd"-->
-<!--             version="2.2">-->
-<!--    <persistence-unit name="clinique" transaction-type="RESOURCE_LOCAL">-->
-<!--        <provider>org.hibernate.jpa.HibernatePersistenceProvider</provider>-->
-<!--        <class>com.cliniquedigitale.entities.User</class>-->
-<!--        <class>com.cliniquedigitale.entities.Patient</class>-->
-<!--        <class>com.cliniquedigitale.entities.Doctor</class>-->
-<!--        <class>com.cliniquedigitale.entities.Staff</class>-->
-<!--        <class>com.cliniquedigitale.entities.Admin</class>-->
-<!--        <class>com.cliniquedigitale.entities.Department</class>-->
-<!--        <class>com.cliniquedigitale.entities.Specialty</class>-->
-<!--        <class>com.cliniquedigitale.entities.Availability</class>-->
-<!--        <class>com.cliniquedigitale.entities.Appointment</class>-->
-<!--        <class>com.cliniquedigitale.entities.MedicalNote</class>-->
-<!--        <properties>-->
-<!--            <property name="javax.persistence.jdbc.driver" value="org.postgresql.Driver"/>-->
-<!--            <property name="javax.persistence.jdbc.url" value="jdbc:postgresql://localhost:5434/clinique"/>-->
-<!--            <property name="javax.persistence.jdbc.user" value="root"/>-->
-<!--            <property name="javax.persistence.jdbc.password" value="1234"/>-->
-<!--            <property name="hibernate.hbm2ddl.auto" value="update"/>-->
-<!--            <property name="hibernate.dialect" value="org.hibernate.dialect.PostgreSQLDialect"/>-->
-<!--            <property name="hibernate.show_sql" value="true"/>-->
-<!--            <property name="hibernate.format_sql" value="true"/>-->
-<!--        </properties>-->
-<!--    </persistence-unit>-->
-<!--</persistence-->
