@@ -7,33 +7,50 @@
     <meta charset="UTF-8">
     <title>Disponibilités - ${doctor.user.name}</title>
     <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <style>
-        :root {
-            --primary: #8B5CF6;
-            --primary-dark: #7C3AED;
-            --primary-light: #A78BFA;
-            --secondary: #EC4899;
-            --success: #10B981;
-            --success-light: #34D399;
-            --text: #1F2937;
-            --text-light: #6B7280;
-            --bg: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            --card: #FFFFFF;
-            --danger: #EF4444;
-        }
-
         * {
+            margin: 0;
+            padding: 0;
             box-sizing: border-box;
         }
 
+        :root {
+            --primary: #2563eb;
+            --primary-dark: #1e40af;
+            --primary-light: #3b82f6;
+            --secondary: #8b5cf6;
+            --success: #10b981;
+            --warning: #f59e0b;
+            --danger: #ef4444;
+            --dark: #0f172a;
+            --gray-50: #f8fafc;
+            --gray-100: #f1f5f9;
+            --gray-200: #e2e8f0;
+            --gray-300: #cbd5e1;
+            --gray-400: #94a3b8;
+            --gray-500: #64748b;
+            --gray-600: #475569;
+            --gray-700: #334155;
+            --gray-800: #1e293b;
+            --white: #ffffff;
+            --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+            --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1);
+            --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1);
+            --shadow-xl: 0 20px 25px -5px rgb(0 0 0 / 0.1);
+        }
+
         body {
-            font-family: 'Segoe UI', Inter, system-ui, -apple-system, Roboto, Arial;
-            background: #667eea;
+            font-family: 'Poppins', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             min-height: 100vh;
             margin: 0;
-            color: var(--text);
+            color: var(--gray-800);
             padding: 1rem 0;
+            line-height: 1.5;
+            font-size: 14px;
         }
 
         .container {
@@ -43,53 +60,56 @@
         }
 
         .header {
-            display:flex;
-            align-items:center;
-            justify-content:space-between;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
             margin-bottom: 2rem;
             flex-wrap: wrap;
             gap: 1rem;
         }
 
         .back {
-            text-decoration:none;
-            color: #fff;
-            font-weight:600;
+            text-decoration: none;
+            color: var(--white);
+            font-weight: 600;
             background: rgba(255,255,255,0.2);
             backdrop-filter: blur(10px);
-            padding: 0.7rem 1.5rem;
-            border-radius: 16px;
+            padding: 0.75rem 1.5rem;
+            border-radius: 50px;
             transition: all 0.3s ease;
             border: 1px solid rgba(255,255,255,0.3);
             display: inline-flex;
             align-items: center;
             gap: 0.5rem;
+            font-size: 0.875rem;
         }
 
         .back:hover {
             background: rgba(255,255,255,0.3);
             transform: translateX(-5px);
+            box-shadow: var(--shadow-md);
         }
 
         .legend {
-            display:flex;
-            align-items:center;
-            gap:.75rem;
-            color: #fff;
-            font-size:.95rem;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            color: var(--white);
+            font-size: 0.875rem;
             background: rgba(255,255,255,0.2);
             backdrop-filter: blur(10px);
-            padding: 0.7rem 1.5rem;
-            border-radius: 16px;
+            padding: 0.75rem 1.5rem;
+            border-radius: 50px;
             border: 1px solid rgba(255,255,255,0.3);
+            font-weight: 500;
         }
 
         .legend .box {
-            width:18px;
-            height:18px;
-            border-radius:8px;
+            width: 18px;
+            height: 18px;
+            border-radius: 8px;
             background: var(--success);
-            border:2px solid #fff;
+            border: 2px solid var(--white);
             box-shadow: 0 2px 8px rgba(16,185,129,0.3);
         }
 
@@ -109,59 +129,65 @@
         }
 
         .card {
-            background: rgba(255,255,255,0.98);
+            background: rgba(255,255,255,0.95);
             backdrop-filter: blur(20px);
-            border-radius: 24px;
-            box-shadow: 0 20px 60px rgba(0,0,0,.15), 0 0 1px rgba(0,0,0,.1);
-            padding: 2rem;
+            border-radius: 16px;
+            box-shadow: var(--shadow-md);
+            padding: 1.5rem;
             border: 1px solid rgba(255,255,255,0.5);
+            transition: all 0.3s ease;
+        }
+
+        .card:hover {
+            box-shadow: var(--shadow-lg);
         }
 
         .doctor-card {
             text-align: center;
             background: linear-gradient(135deg, rgba(255,255,255,0.98), rgba(255,255,255,0.95));
-            border: 2px solid rgba(139,92,246,0.2);
+            border: 1px solid var(--gray-200);
         }
 
         .avatar {
-            width: 120px;
-            height: 120px;
+            width: 100px;
+            height: 100px;
             border-radius: 50%;
             background: linear-gradient(135deg, var(--primary), var(--secondary));
             display: flex;
             align-items: center;
             justify-content: center;
-            color: #fff;
+            color: var(--white);
             font-weight: 800;
-            font-size: 3rem;
-            box-shadow: 0 12px 30px rgba(139,92,246,0.4);
-            border: 4px solid rgba(255,255,255,0.9);
-            margin: 0 auto 1.5rem;
+            font-size: 2.5rem;
+            box-shadow: var(--shadow-lg);
+            border: 4px solid var(--white);
+            margin: 0 auto 1rem;
         }
 
         .doctor-name {
             font-size: 1.5rem;
-            font-weight: 800;
-            color: var(--text);
+            font-weight: 700;
+            color: var(--gray-800);
             margin-bottom: 0.5rem;
         }
 
         .doctor-title {
-            font-size: 1rem;
-            color: var(--text-light);
+            font-size: 0.95rem;
+            color: var(--gray-600);
             margin-bottom: 1rem;
+            font-weight: 500;
         }
 
         .badge {
             display: inline-block;
             padding: 0.5rem 1rem;
-            border-radius: 12px;
-            background: linear-gradient(135deg, #F0ABFC, #E879F9);
-            color: #fff;
-            font-size: 0.85rem;
-            font-weight: 700;
-            box-shadow: 0 4px 15px rgba(236,72,153,0.3);
-            margin-top: 1rem;
+            border-radius: 50px;
+            background: linear-gradient(135deg, var(--primary-light), var(--secondary));
+            color: var(--white);
+            font-size: 0.8rem;
+            font-weight: 600;
+            box-shadow: var(--shadow-sm);
+            margin-top: 0.5rem;
         }
 
         .description-card {
@@ -169,25 +195,25 @@
         }
 
         .card-title {
-            font-weight: 800;
+            font-weight: 700;
             font-size: 1.1rem;
             margin-bottom: 1rem;
-            color: var(--text);
+            color: var(--gray-800);
             display: flex;
             align-items: center;
             gap: 0.5rem;
         }
 
         .card-title::before {
-            content: '✦';
+            content: '●';
             color: var(--primary);
-            font-size: 1.3rem;
+            font-size: 1.5rem;
         }
 
         .description-text {
-            color: var(--text-light);
+            color: var(--gray-600);
             line-height: 1.7;
-            font-size: 0.95rem;
+            font-size: 0.9rem;
         }
 
         .description-text p {
@@ -201,17 +227,18 @@
         .weekly-card ul {
             margin: 0.5rem 0 0 1.2rem;
             padding: 0;
-            color: var(--text-light);
+            color: var(--gray-600);
             line-height: 1.8;
         }
 
         .weekly-card ul li {
             margin: 0.5rem 0;
+            font-size: 0.9rem;
         }
 
         .weekly-card strong {
-            color: var(--text);
-            font-weight: 700;
+            color: var(--gray-800);
+            font-weight: 600;
         }
 
         /* Calendrier à droite - plus compact */
@@ -234,9 +261,12 @@
         }
 
         .cal-month {
-            font-weight: 800;
+            font-weight: 700;
             font-size: 1.3rem;
-            color: var(--primary-dark);
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
         }
 
         .nav {
@@ -246,20 +276,19 @@
 
         .nav a {
             text-decoration: none;
-            color: #fff;
-            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
-            padding: 0.6rem 1rem;
-            border-radius: 12px;
+            color: var(--white);
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            padding: 0.6rem 1.2rem;
+            border-radius: 50px;
             font-weight: 600;
             transition: all 0.3s ease;
-            box-shadow: 0 4px 15px rgba(139,92,246,0.3);
-            font-size: 0.9rem;
+            box-shadow: var(--shadow-md);
+            font-size: 0.85rem;
         }
 
         .nav a:hover {
-            background: linear-gradient(135deg, var(--primary-dark), var(--primary));
-            transform: translateY(-3px);
-            box-shadow: 0 8px 25px rgba(139,92,246,0.5);
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-lg);
         }
 
         .calendar-grid {
@@ -271,17 +300,17 @@
 
         .dow {
             text-align: center;
-            font-weight: 800;
+            font-weight: 700;
             color: var(--primary);
             padding: 0.5rem 0;
-            font-size: 0.8rem;
+            font-size: 0.75rem;
             text-transform: uppercase;
             letter-spacing: 0.5px;
         }
 
         .day {
-            background: #fff;
-            border: 2px solid #E5E7EB;
+            background: var(--white);
+            border: 2px solid var(--gray-200);
             border-radius: 12px;
             min-height: 50px;
             padding: 0.5rem;
@@ -294,26 +323,27 @@
         }
 
         .day .num {
-            font-weight: 700;
-            font-size: 0.95rem;
+            font-weight: 600;
+            font-size: 0.9rem;
+            color: var(--gray-700);
         }
 
         .day.available {
             border-color: var(--success);
-            background: linear-gradient(135deg, #ECFDF5 0%, #D1FAE5 100%);
+            background: linear-gradient(135deg, #f0fdf4 0%, #dcfce7 100%);
             cursor: pointer;
-            box-shadow: 0 2px 8px rgba(16,185,129,0.1);
+            box-shadow: var(--shadow-sm);
         }
 
         .day.available:hover {
             transform: translateY(-4px) scale(1.08);
-            box-shadow: 0 12px 30px rgba(16,185,129,0.3);
-            border-color: var(--success-light);
+            box-shadow: var(--shadow-lg);
+            border-color: var(--success);
         }
 
         .day.available:hover .num {
-            color: var(--primary-dark);
-            font-weight: 800;
+            color: var(--primary);
+            font-weight: 700;
         }
 
         .day.selected {
@@ -321,10 +351,10 @@
         }
 
         .day.past {
-            opacity: 0.5;
+            opacity: 0.4;
             cursor: not-allowed;
-            background: #FAFAFA;
-            border-color: #F3F4F6;
+            background: var(--gray-50);
+            border-color: var(--gray-200);
         }
 
         /* Modal */
@@ -332,7 +362,7 @@
             display: none;
             position: fixed;
             inset: 0;
-            background: rgba(0,0,0,.6);
+            background: rgba(0,0,0,.5);
             z-index: 9999;
             backdrop-filter: blur(8px);
         }
@@ -350,9 +380,9 @@
         }
 
         .modal .content {
-            background: #fff;
-            border-radius: 24px;
-            box-shadow: 0 25px 80px rgba(0,0,0,.3);
+            background: var(--white);
+            border-radius: 16px;
+            box-shadow: var(--shadow-xl);
             width: min(550px, 92%);
             max-height: 85vh;
             overflow: auto;
@@ -369,9 +399,14 @@
             align-items: center;
             justify-content: space-between;
             padding: 1.25rem 1.5rem;
-            border-bottom: 2px solid #F3F4F6;
+            border-bottom: 2px solid var(--gray-200);
             margin: 0;
-            background: linear-gradient(135deg, #F9FAFB, #ffffff);
+            background: var(--gray-50);
+        }
+
+        .modal .header > div {
+            font-weight: 700;
+            color: var(--gray-800);
         }
 
         .modal .body {
@@ -380,17 +415,18 @@
 
         .close {
             border: none;
-            background: #F3F4F6;
-            color: #111;
-            border-radius: 12px;
+            background: var(--gray-200);
+            color: var(--gray-700);
+            border-radius: 8px;
             padding: 0.5rem 0.8rem;
             cursor: pointer;
             transition: all 0.2s ease;
             font-weight: 600;
+            font-size: 0.85rem;
         }
 
         .close:hover {
-            background: #E5E7EB;
+            background: var(--gray-300);
             transform: scale(1.05);
         }
 
@@ -403,54 +439,58 @@
 
         .slot {
             padding: 0.6rem 0.9rem;
-            border-radius: 12px;
-            border: 2px solid #E5E7EB;
-            background: #fff;
+            border-radius: 8px;
+            border: 2px solid var(--gray-200);
+            background: var(--white);
             cursor: pointer;
             font-weight: 600;
             transition: all 0.3s ease;
-            font-size: 0.95rem;
+            font-size: 0.85rem;
+            color: var(--gray-700);
         }
 
         .slot:hover {
             border-color: var(--primary);
-            background: #F5F3FF;
+            background: var(--gray-50);
             transform: translateY(-2px);
-            box-shadow: 0 4px 12px rgba(139,92,246,0.2);
+            box-shadow: var(--shadow-sm);
         }
 
         .slot.disabled {
-            opacity: 0.5;
+            opacity: 0.4;
             cursor: not-allowed;
-            background: #F9FAFB;
+            background: var(--gray-50);
         }
 
         .slot.disabled:hover {
             transform: none;
             box-shadow: none;
+            border-color: var(--gray-200);
         }
 
         .slot.selected {
             border-color: var(--primary);
-            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
-            color: #fff;
-            box-shadow: 0 6px 20px rgba(139,92,246,0.4);
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            color: var(--white);
+            box-shadow: var(--shadow-md);
         }
 
         #confirmBtn {
-            background: linear-gradient(135deg, var(--primary), var(--primary-dark)) !important;
-            color: #fff !important;
-            font-weight: 700 !important;
-            padding: 0.7rem 1.5rem !important;
-            border-radius: 12px !important;
+            background: linear-gradient(135deg, var(--primary), var(--secondary)) !important;
+            color: var(--white) !important;
+            font-weight: 600 !important;
+            padding: 0.75rem 1.5rem !important;
+            border-radius: 50px !important;
             transition: all 0.3s ease !important;
-            box-shadow: 0 4px 15px rgba(139,92,246,0.3) !important;
+            box-shadow: var(--shadow-md) !important;
             border: none !important;
+            font-size: 0.875rem !important;
+            cursor: pointer !important;
         }
 
         #confirmBtn:hover:not(:disabled) {
             transform: translateY(-2px) !important;
-            box-shadow: 0 8px 25px rgba(139,92,246,0.5) !important;
+            box-shadow: var(--shadow-lg) !important;
         }
 
         #confirmBtn:disabled {
@@ -483,7 +523,7 @@
             }
 
             .card {
-                padding: 1.5rem;
+                padding: 1.25rem;
             }
 
             .calendar-grid {
@@ -497,7 +537,7 @@
             }
 
             .day .num {
-                font-size: 0.85rem;
+                font-size: 0.8rem;
             }
 
             .dow {
@@ -525,22 +565,28 @@
             align-items: center;
             gap: 0.75rem;
             padding: 0.75rem;
-            background: #F9FAFB;
+            background: var(--gray-50);
             border-radius: 12px;
             margin-bottom: 0.75rem;
+            transition: all 0.2s ease;
+        }
+
+        .info-item:hover {
+            background: var(--gray-100);
         }
 
         .info-icon {
             width: 36px;
             height: 36px;
             border-radius: 10px;
-            background: linear-gradient(135deg, var(--primary-light), var(--primary));
+            background: linear-gradient(135deg, var(--primary-light), var(--secondary));
             display: flex;
             align-items: center;
             justify-content: center;
-            color: #fff;
+            color: var(--white);
             font-size: 1.1rem;
             flex-shrink: 0;
+            box-shadow: var(--shadow-sm);
         }
 
         .info-text {
@@ -548,18 +594,71 @@
         }
 
         .info-label {
-            font-size: 0.75rem;
-            color: var(--text-light);
+            font-size: 0.7rem;
+            color: var(--gray-500);
             text-transform: uppercase;
             letter-spacing: 0.5px;
             font-weight: 600;
         }
 
         .info-value {
-            font-size: 0.95rem;
-            color: var(--text);
-            font-weight: 700;
+            font-size: 0.9rem;
+            color: var(--gray-800);
+            font-weight: 600;
             margin-top: 0.2rem;
+        }
+
+        #modalDate {
+            color: var(--gray-600);
+            font-weight: 600;
+            margin-bottom: 1rem;
+            font-size: 0.9rem;
+        }
+
+        #modalMsg {
+            margin-top: 0.5rem;
+            color: var(--gray-500);
+            font-size: 0.85rem;
+            font-style: italic;
+        }
+
+        #bookForm {
+            margin-top: 1rem;
+            display: flex;
+            gap: 0.5rem;
+            align-items: end;
+            flex-wrap: wrap;
+        }
+
+        #bookForm > div {
+            display: flex;
+            flex-direction: column;
+            gap: 0.25rem;
+            min-width: 180px;
+            flex: 1;
+        }
+
+        #bookForm label {
+            font-weight: 600;
+            color: var(--gray-600);
+            font-size: 0.85rem;
+        }
+
+        #bookForm select {
+            padding: 0.7rem 0.8rem;
+            border: 2px solid var(--gray-200);
+            border-radius: 8px;
+            font-weight: 600;
+            font-size: 0.875rem;
+            color: var(--gray-700);
+            background: var(--white);
+            transition: all 0.2s ease;
+        }
+
+        #bookForm select:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
         }
     </style>
 </head>
@@ -644,7 +743,7 @@
                 <div class="card-title">Créneaux hebdomadaires</div>
                 <c:choose>
                     <c:when test="${empty weekly}">
-                        <div style="color: var(--text-light); font-style: italic;">
+                        <div style="color: var(--gray-500); font-style: italic; font-size: 0.9rem;">
                             Aucune disponibilité renseignée.
                         </div>
                     </c:when>
@@ -712,21 +811,21 @@
 <div id="slotsModal" class="modal" aria-hidden="true">
   <div class="content">
     <div class="header">
-      <div style="font-weight:800">Créneaux disponibles</div>
+      <div>Créneaux disponibles</div>
       <button class="close" id="closeModal">Fermer</button>
     </div>
     <div class="body">
-      <div id="modalDate" style="color: var(--text-light); font-weight: 600; margin-bottom: 1rem;"></div>
+      <div id="modalDate"></div>
       <div id="modalSlots" class="slots"></div>
-      <div id="modalMsg" style="margin-top:.5rem; color: var(--text-light);"></div>
+      <div id="modalMsg"></div>
       <!-- Formulaire de réservation -->
-      <form id="bookForm" method="post" action="${pageContext.request.contextPath}/patient/appointments/book" style="margin-top:1rem; display:flex; gap:.5rem; align-items: end; flex-wrap: wrap;">
+      <form id="bookForm" method="post" action="${pageContext.request.contextPath}/patient/appointments/book">
           <input type="hidden" name="doctorId" value="${doctor.id}">
           <input type="hidden" name="date" id="bookDate">
           <input type="hidden" name="time" id="bookTime">
-          <div style="display:flex; flex-direction: column; gap:.25rem; min-width: 180px; flex: 1;">
-              <label for="bookType" style="font-weight:600; color:var(--text-light); font-size: 0.9rem;">Type de consultation</label>
-              <select id="bookType" name="type" style="padding:.7rem .8rem; border:2px solid #E5E7EB; border-radius:10px; font-weight: 600;">
+          <div>
+              <label for="bookType">Type de consultation</label>
+              <select id="bookType" name="type">
                   <option value="CONSULTATION">Consultation</option>
                   <option value="SUIVI">Suivi</option>
                   <option value="URGENCE">Urgence</option>
@@ -769,7 +868,7 @@
   function pad(n){ return (n<10 ? '0':'')+n; }
   function toJour(date){
     const d = date.getDay();
-    return ['DIMANCHE','LUNDI','MARDI','MERCREDI','JEUDI','VENDREDI','SAMEDI'][d];
+    return ['DIMANCHE','LUNDI','MARDI','MERCREDI','JEUDI','VENDEDI','SAMEDI'][d];
   }
   function parseTime(str){ const [h,m] = str.split(':').map(Number); return h*60 + m; }
   function fmt(minutes){ const h = Math.floor(minutes/60), m = minutes%60; return pad(h)+':'+pad(m); }
