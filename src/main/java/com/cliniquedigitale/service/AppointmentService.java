@@ -57,18 +57,14 @@ public class AppointmentService {
             LocalTime end = a.getHeureFin();
             if (!end.isAfter(start)) continue;
             LocalTime t = start;
-            // hna kanzid 30 min ou kanchouf wach ft end
+
             while (!t.plusMinutes(SLOT_MINUTES).isAfter(end)) {
-                // pause (12:00 - 13:00)
                 if (!(t.isBefore(LocalTime.NOON.plusHours(1)) && !t.isBefore(LocalTime.NOON))) {
-                    // Ajouter t dans treeSet
                     slots.add(t);
                 }
-                //kan7at le nouveau temps t + 30min(SLOT_MINUTES)
                 t = t.plusMinutes(SLOT_MINUTES);
             }
         }
-        // list dyal appointment lkoula doctor ou kan7ydhoum mn slots (treeSet)
         List<Appointment> dayAppointments = appointmentRepository.findByDoctorAndDate(doctor, date);
         for (Appointment ap : dayAppointments) {
             if (ap.getHour() != null) slots.remove(ap.getHour());
